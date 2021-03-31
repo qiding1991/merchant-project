@@ -21,7 +21,8 @@ public class Merchant {
   private String email;
   private String website;
   private String wx;
-
+  private Boolean isHot;
   private ApplyInfo applyInfo;
   private List<Appraise> appraiseList;
+  private Integer thumpCount;
 }
