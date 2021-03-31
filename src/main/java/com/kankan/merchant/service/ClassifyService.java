@@ -32,15 +32,17 @@ public interface ClassifyService {
 
   /**
    * 更新
-    * @param merchantClassify
+   *
+   * @param merchantClassify
    */
-  void  updateMerchantClassify(MerchantClassify merchantClassify);
+  void updateMerchantClassify(MerchantClassify merchantClassify);
 
   /**
    * 更新
+   *
    * @param itemClassify
    */
-  void  updateMerchantClassifyItem(ItemClassify  itemClassify);
+  void updateMerchantClassifyItem(ItemClassify itemClassify);
 
 
   void delMerchantClassify(String classifyId);
