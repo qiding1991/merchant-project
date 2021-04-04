@@ -8,11 +8,13 @@ import com.kankan.merchant.service.MerchantService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
+@CrossOrigin(allowCredentials = "*",methods ={RequestMethod.OPTIONS,RequestMethod.GET,RequestMethod.POST},origins = "*")
 @Api(tags = "管理后台-商家")
 @RequestMapping("admin/merchant")
 @RestController
