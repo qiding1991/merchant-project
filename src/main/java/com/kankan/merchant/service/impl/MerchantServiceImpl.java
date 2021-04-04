@@ -94,7 +94,9 @@ public class MerchantServiceImpl implements MerchantService {
         registerShopParam.setEnvScore(0);
         registerShopParam.setFlavorScore(0);
         registerShopParam.setServiceScore(0);
-        registerShopParam.setHot(merchant.getIsHot());
+        if (null != merchant.getIsHot()) {
+            registerShopParam.setHot(merchant.getIsHot());
+        }
         registerShopParam.setStatus(merchant.getApplyInfo().getApplyStatus());
         return registerShopParam;
     }
