@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class RegisterShopParam {
-  private String classifyId;
+  /*private String classifyId;
   private String itemId;
   private String name; //商铺名称
   private Address address;
@@ -17,6 +17,29 @@ public class RegisterShopParam {
   private String companyCZ;
   private String IDUrl;
   private List<String> photos;
-  private Boolean yelp;
+  private Boolean yelp;*/
+
+  private String id;
+  private String shopName;
+  private String category1;
+  private String category2;
+  private String region;
+  private String address;
+  private String location;
+  private String faxNo;
+  private String serviceTime;
+  private String contact;
+  private String email;
+  private String website;
+  private String welChat;
+  private List<Integer> payType;
+  private String file;
+  private int sourceFrom;
+  private Integer applyStatus;
+
+  public RegisterShopParam (String id, Integer applyStatus) {
+    this.id = id;
+    this.applyStatus = applyStatus;
+  }
 }
 

@@ -21,6 +21,8 @@ public class Merchant {
   private String email;
   private String website;
   private String wx;
+  private String faxNo;
+  private String serviceTime;
   private Boolean isHot;
   private ApplyInfo applyInfo;
   private List<Appraise> appraiseList;

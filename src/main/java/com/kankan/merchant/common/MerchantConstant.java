@@ -11,6 +11,10 @@ public class MerchantConstant {
   public int produce_is_hot=1;//是热门菜品
   public int produce_is_not_hot=2;//不是热门菜品
 
+  public static int merchant_wait_apply = 0;//待审核
+  public static int merchant_done_apply = 1;//已审核
 
+  public static int merchant_source_local = 0;//本地来源
+  public static int merchant_source_yelp = 1;//yelp来源
 }
 

@@ -1,7 +1,12 @@
 package com.kankan.merchant.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
 
+import com.kankan.merchant.common.MerchantConstant;
+import com.kankan.merchant.model.Address;
+import com.kankan.merchant.module.merchant.ApplyInfo;
+import com.kankan.merchant.module.regiter.param.RegisterShopParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -24,9 +29,36 @@ public class MerchantServiceImpl implements MerchantService {
     private MongoTemplate mongoTemplate;
 
     @Override
-    public Merchant registerMerchant(Merchant merchant) {
-        Merchant result = mongoTemplate.insert(merchant);
-        return result;
+    public RegisterShopParam registerMerchant(RegisterShopParam registerShopParam) {
+        Merchant merchant = buildData(registerShopParam);
+        merchant = mongoTemplate.insert(merchant);
+        return new RegisterShopParam(merchant.getId(),merchant.getApplyInfo().getApplyStatus());
+    }
+
+    private Merchant buildData (RegisterShopParam registerShopParam) {
+        Merchant merchant = new Merchant();
+        merchant.setName(registerShopParam.getShopName());
+        merchant.setClassifyId(registerShopParam.getCategory1());
+        merchant.setItemId(registerShopParam.getCategory2());
+        Address address = new Address();
+        address.setArea(registerShopParam.getRegion());
+        address.setName(registerShopParam.getAddress());
+        address.setLang(Double.parseDouble(registerShopParam.getLocation().split(";")[0]));
+        address.setLat(Double.parseDouble(registerShopParam.getLocation().split(";")[1]));
+        merchant.setAddress(address);
+        ApplyInfo applyInfo = new ApplyInfo();
+        applyInfo.setPhotos(Arrays.asList(registerShopParam.getFile().split(";")));
+        applyInfo.setYelp(MerchantConstant.merchant_source_yelp == registerShopParam.getSourceFrom());
+        applyInfo.setApplyStatus(MerchantConstant.merchant_wait_apply);
+        merchant.setApplyInfo(applyInfo);
+        merchant.setEmail(registerShopParam.getEmail());
+        merchant.setPhone(registerShopParam.getContact());
+        merchant.setWebsite(registerShopParam.getWebsite());
+        merchant.setWx(registerShopParam.getWelChat());
+        merchant.setFaxNo(registerShopParam.getFaxNo());
+        merchant.setPaymentType(registerShopParam.getPayType());
+        merchant.setServiceTime(registerShopParam.getServiceTime());
+        return merchant;
     }
 
     @Override
