@@ -15,7 +15,7 @@ import com.kankan.merchant.service.ClassifyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@CrossOrigin
+@CrossOrigin(origins = "*")
 @Api(tags = "用户接口-商家分类信息")
 @RequestMapping("user/classify")
 @RestController

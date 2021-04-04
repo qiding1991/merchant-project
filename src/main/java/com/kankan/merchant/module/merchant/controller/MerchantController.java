@@ -16,7 +16,7 @@ import com.kankan.merchant.service.MerchantService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@CrossOrigin
+@CrossOrigin(origins = "*")
 @Api(tags = "管理后台-商家")
 @RequestMapping("admin/merchant")
 @RestController
