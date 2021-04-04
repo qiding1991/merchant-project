@@ -13,6 +13,8 @@ public interface MerchantService {
    */
   RegisterShopParam registerMerchant(RegisterShopParam registerShopParam);
 
+  public List<RegisterShopParam> findShopList();
+
   List<Merchant> findShop(String classifyId);
 
   List<Merchant> findShopBySecond(String secondClassifyId);
@@ -21,7 +23,7 @@ public interface MerchantService {
 
   void delMerchant(String  shopId);
 
-  Merchant findById(String shopId);
+  RegisterShopParam findById(String shopId);
 
   /**
    *
