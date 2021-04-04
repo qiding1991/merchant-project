@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,9 +21,9 @@ public class MerchantController {
     @Autowired
     private MerchantService merchantService;
 
-    @ApiOperation(value = "管理后台商家注册服务",httpMethod = "post")
-    @PostMapping
-    public CommonResponse applyShop (RegisterShopParam registerShopParam) {
+    @ApiOperation(value = "管理后台商家注册服务")
+    @PostMapping("applyShop")
+    public CommonResponse applyShop (@RequestBody RegisterShopParam registerShopParam) {
         if (null == registerShopParam) {
             return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
         }

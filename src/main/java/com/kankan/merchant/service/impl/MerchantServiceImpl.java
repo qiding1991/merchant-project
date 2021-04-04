@@ -3,20 +3,19 @@ package com.kankan.merchant.service.impl;
 import java.util.Arrays;
 import java.util.List;
 
-import com.kankan.merchant.common.MerchantConstant;
-import com.kankan.merchant.model.Address;
-import com.kankan.merchant.module.merchant.ApplyInfo;
-import com.kankan.merchant.module.regiter.param.RegisterShopParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.kankan.merchant.common.MerchantConstant;
 import com.kankan.merchant.config.OrderRule;
 import com.kankan.merchant.config.PriceRange;
+import com.kankan.merchant.model.Address;
+import com.kankan.merchant.module.merchant.ApplyInfo;
 import com.kankan.merchant.module.merchant.Merchant;
+import com.kankan.merchant.module.regiter.param.RegisterShopParam;
 import com.kankan.merchant.service.MerchantService;
 
 
