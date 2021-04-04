@@ -96,7 +96,8 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public List<Merchant> filterShop(Integer shopType, PriceRange priceRange, Integer paymentType, Double minScore, Double maxScore) {
-        return null;
+        //TODO 类型不知道，暂时只返回所有的数据
+        return mongoTemplate.findAll(Merchant.class);
     }
 
     @Override
