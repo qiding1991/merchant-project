@@ -3,21 +3,15 @@ package com.kankan.merchant.module.merchant.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.kankan.merchant.common.CommonResponse;
 import com.kankan.merchant.common.ErrorCode;
 import com.kankan.merchant.module.regiter.param.RegisterShopParam;
 import com.kankan.merchant.service.MerchantService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 @CrossOrigin(origins = "*")
@@ -30,7 +24,7 @@ public class MerchantController {
     private MerchantService merchantService;
 
     @ApiOperation(value = "管理后台商家注册服务")
-    @PostMapping("applyShop")
+    @RequestMapping("/applyShop")
     public CommonResponse applyShop (@RequestBody RegisterShopParam registerShopParam) {
         if (null == registerShopParam) {
             return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
