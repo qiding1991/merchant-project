@@ -2,7 +2,7 @@ package com.kankan.merchant.service.impl;
 
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import com.kankan.merchant.common.MerchantConstant;
 import com.kankan.merchant.model.Address;
 import com.kankan.merchant.module.merchant.ApplyInfo;
@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
 import com.kankan.merchant.config.OrderRule;
 import com.kankan.merchant.config.PriceRange;
 import com.kankan.merchant.module.merchant.Merchant;
@@ -30,12 +28,12 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public RegisterShopParam registerMerchant(RegisterShopParam registerShopParam) {
-        Merchant merchant = buildData(registerShopParam);
+        Merchant merchant = paramToMerchant(registerShopParam);
         merchant = mongoTemplate.insert(merchant);
         return new RegisterShopParam(merchant.getId(),merchant.getApplyInfo().getApplyStatus());
     }
 
-    private Merchant buildData (RegisterShopParam registerShopParam) {
+    private Merchant paramToMerchant (RegisterShopParam registerShopParam) {
         Merchant merchant = new Merchant();
         merchant.setName(registerShopParam.getShopName());
         merchant.setClassifyId(registerShopParam.getCategory1());
@@ -59,6 +57,44 @@ public class MerchantServiceImpl implements MerchantService {
         merchant.setPaymentType(registerShopParam.getPayType());
         merchant.setServiceTime(registerShopParam.getServiceTime());
         return merchant;
+    }
+
+    private RegisterShopParam merchantToParam (Merchant merchant) {
+        RegisterShopParam registerShopParam = new RegisterShopParam();
+        if (null == merchant) {
+            return registerShopParam;
+        }
+        registerShopParam.setId(merchant.getId());
+        registerShopParam.setShopName(merchant.getName());
+        //registerShopParam.setCompanyName(merchant.getApplyInfo().getCompanyName());
+        registerShopParam.setCategory1(merchant.getClassifyId());
+        registerShopParam.setCategory2(merchant.getItemId());
+        if (null != merchant.getAddress()) {
+            registerShopParam.setRegion(merchant.getAddress().getArea());
+            registerShopParam.setAddress(merchant.getAddress().getName());
+            registerShopParam.setLocation(merchant.getAddress().getLang() + ";" + merchant.getAddress().getLat());
+        }
+        registerShopParam.setContact(merchant.getPhone());
+        registerShopParam.setFaxNo(merchant.getFaxNo());
+        registerShopParam.setServiceTime(merchant.getServiceTime());
+        registerShopParam.setEmail(merchant.getEmail());
+        registerShopParam.setWebsite(merchant.getWebsite());
+        registerShopParam.setWelChat(merchant.getWx());
+        registerShopParam.setPayType(merchant.getPaymentType());
+        registerShopParam.setPercapitaPrice("0");
+        if (null != merchant.getApplyInfo()) {
+            registerShopParam.setCompanyName(merchant.getApplyInfo().getCompanyName());
+            registerShopParam.setFile(merchant.getApplyInfo().getIDUrl());
+            registerShopParam.setSourceFrom(merchant.getApplyInfo().getYelp()?0:1);
+            registerShopParam.setShopPicture(merchant.getApplyInfo().getPhotos());
+        }
+        registerShopParam.setWholeScore(0);
+        registerShopParam.setEnvScore(0);
+        registerShopParam.setFlavorScore(0);
+        registerShopParam.setServiceScore(0);
+        registerShopParam.setHot(merchant.getIsHot());
+        registerShopParam.setStatus(merchant.getApplyInfo().getApplyStatus());
+        return registerShopParam;
     }
 
     @Override
@@ -87,9 +123,17 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public Merchant findById(String shopId) {
+    public RegisterShopParam findById(String shopId) {
         Query query = Query.query(Criteria.where("_id").is(shopId));
-        return mongoTemplate.findOne(query, Merchant.class);
+        return merchantToParam(mongoTemplate.findOne(query, Merchant.class));
+    }
+
+    @Override
+    public List<RegisterShopParam> findShopList() {
+        List<Merchant> list = mongoTemplate.findAll(Merchant.class);
+        return list.stream().map(item -> {
+            return merchantToParam(item);
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -133,7 +177,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public void thumpMerchant(String shopId) {
-        Merchant merchant=findById(shopId);
+        Merchant merchant=paramToMerchant(findById(shopId));
         merchant.setThumpCount(merchant.getThumpCount()+1);
         mongoTemplate.save(merchant);
     }
