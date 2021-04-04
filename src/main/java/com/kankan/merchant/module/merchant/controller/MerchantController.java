@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-@CrossOrigin(allowCredentials = "*",methods ={RequestMethod.OPTIONS,RequestMethod.GET,RequestMethod.POST},origins = "*")
 @Api(tags = "管理后台-商家")
 @RequestMapping("admin/merchant")
 @RestController
