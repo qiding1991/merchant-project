@@ -10,10 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import com.kankan.merchant.model.product.Product;
 import com.kankan.merchant.service.ProductService;
 
-/**
- * @author <qiding@kuaishou.com>
- * Created on 2021-04-04
- */
+
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private MongoTemplate mongoTemplate;

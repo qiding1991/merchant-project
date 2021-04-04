@@ -10,7 +10,7 @@ public interface ProductTypeService {
 
   List<ProductType> productTypeList(String shopId);
 
-  void delProductType(ProductType productType);
+  void delProductType(String id);
 
   void updateProductType(ProductType productType);
 

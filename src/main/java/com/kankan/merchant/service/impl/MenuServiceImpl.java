@@ -11,10 +11,7 @@ import org.springframework.stereotype.Service;
 import com.kankan.merchant.model.MenuDetail;
 import com.kankan.merchant.service.MenuService;
 
-/**
- * @author <qiding@kuaishou.com>
- * Created on 2021-03-31
- */
+
 @Service
 public class MenuServiceImpl implements MenuService {
 

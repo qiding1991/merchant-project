@@ -14,10 +14,7 @@ import com.kankan.merchant.config.PriceRange;
 import com.kankan.merchant.module.merchant.Merchant;
 import com.kankan.merchant.service.MerchantService;
 
-/**
- * @author <qiding@kuaishou.com>
- * Created on 2021-03-31
- */
+
 @Service
 public class MerchantServiceImpl implements MerchantService {
     @Autowired
