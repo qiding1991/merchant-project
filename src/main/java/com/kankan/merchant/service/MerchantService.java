@@ -18,7 +18,7 @@ public interface MerchantService {
 
   void updateMerchant(Merchant merchant);
 
-  void delMerchant(Merchant merchant);
+  void delMerchant(String  shopId);
 
   Merchant findById(String shopId);
 

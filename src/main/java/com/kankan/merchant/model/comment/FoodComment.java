@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class FoodComment  extends ShopComment{
+  private String foodId;
   private Double kwScore;//口味评分
   private Double hjScore;//环境
   private Double fwScore;//服务
