@@ -48,6 +48,7 @@ public class RegisterShopParam {
   private String registerTime;
   private String updateTime;
 
+  public RegisterShopParam () {}
   public RegisterShopParam (String id, Integer applyStatus) {
     this.id = id;
     this.applyStatus = applyStatus;
