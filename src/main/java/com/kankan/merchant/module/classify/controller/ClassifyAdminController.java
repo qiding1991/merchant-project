@@ -1,25 +1,27 @@
 package com.kankan.merchant.module.classify.controller;
 
-import com.kankan.merchant.common.CommonResponse;
-import com.kankan.merchant.module.classify.model.ItemClassify;
-import com.kankan.merchant.module.classify.model.MerchantClassify;
-import com.kankan.merchant.module.classify.param.ClassifyParam;
-import com.kankan.merchant.module.classify.param.ItemClassifyParam;
-import com.kankan.merchant.service.ClassifyService;
-import com.kankan.merchant.service.impl.MerchantClassifyServiceImpl;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.kankan.merchant.common.CommonResponse;
+import com.kankan.merchant.module.classify.model.ItemClassify;
+import com.kankan.merchant.module.classify.model.MerchantClassify;
+import com.kankan.merchant.module.classify.param.ClassifyParam;
+import com.kankan.merchant.module.classify.param.ItemClassifyParam;
+import com.kankan.merchant.service.ClassifyService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
+@CrossOrigin
 @Api(tags = "管理后台-商家分类信息")
 @RequestMapping("admin/classify")
 @RestController
