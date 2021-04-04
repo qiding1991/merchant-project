@@ -38,13 +38,13 @@ public class MerchantController {
         return CommonResponse.success(merchantService.registerMerchant(registerShopParam));
     }
 
-    @ApiOperation(value = "管理后台商家列表服务",httpMethod = "get")
+    @ApiOperation(value = "管理后台商家列表服务")
     @RequestMapping("/shopAllList")
     public CommonResponse shopList () {
         return CommonResponse.success(merchantService.findShopList());
     }
 
-    @ApiOperation(value = "管理后台获取商家详情",httpMethod = "post")
+    @ApiOperation(value = "管理后台获取商家详情")
     @RequestMapping("/shopDetail")
     public CommonResponse applyShop (String shopId) {
         if (null == shopId) {
@@ -53,7 +53,7 @@ public class MerchantController {
         return CommonResponse.success(merchantService.findById(shopId));
     }
 
-    @ApiOperation(value = "管理后台删除商家信息",httpMethod = "delete")
+    @ApiOperation(value = "管理后台删除商家信息")
     @DeleteMapping
     public CommonResponse delShop (String shopId) {
         if (null == shopId) {
