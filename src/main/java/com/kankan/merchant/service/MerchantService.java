@@ -19,7 +19,7 @@ public interface MerchantService {
 
   List<Merchant> findShopBySecond(String secondClassifyId);
 
-  void updateMerchant(Merchant merchant);
+  void updateMerchant(RegisterShopParam registerShopParam);
 
   void delMerchant(String  shopId);
 

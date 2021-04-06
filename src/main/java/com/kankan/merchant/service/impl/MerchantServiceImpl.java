@@ -12,14 +12,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-
-import com.kankan.merchant.common.MerchantConstant;
 import com.kankan.merchant.config.OrderRule;
 import com.kankan.merchant.config.PriceRange;
-import com.kankan.merchant.model.Address;
-import com.kankan.merchant.module.merchant.ApplyInfo;
 import com.kankan.merchant.module.merchant.Merchant;
-import com.kankan.merchant.module.regiter.param.RegisterShopParam;
 import com.kankan.merchant.service.MerchantService;
 
 
@@ -31,6 +26,7 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public RegisterShopParam registerMerchant(RegisterShopParam registerShopParam) {
         Merchant merchant = paramToMerchant(registerShopParam);
+        merchant.setRegisterTime(System.currentTimeMillis());
         merchant = mongoTemplate.insert(merchant);
         return new RegisterShopParam(merchant.getId(),merchant.getApplyInfo().getApplyStatus());
     }
@@ -58,6 +54,8 @@ public class MerchantServiceImpl implements MerchantService {
         merchant.setFaxNo(registerShopParam.getFaxNo());
         merchant.setPaymentType(registerShopParam.getPayType());
         merchant.setServiceTime(registerShopParam.getServiceTime());
+        merchant.setRegisterTime(registerShopParam.getRegisterTime());
+        merchant.setUpdateTime(registerShopParam.getUpdateTime());
         return merchant;
     }
 
@@ -98,6 +96,8 @@ public class MerchantServiceImpl implements MerchantService {
             registerShopParam.setHot(merchant.getIsHot());
         }
         registerShopParam.setStatus(merchant.getApplyInfo().getApplyStatus());
+        registerShopParam.setRegisterTime(merchant.getRegisterTime());
+        registerShopParam.setUpdateTime(merchant.getUpdateTime());
         return registerShopParam;
     }
 
@@ -114,10 +114,8 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public void updateMerchant(Merchant merchant) {
-        //TODO 设置更新信息
-        mongoTemplate.save(merchant);
-        return;
+    public void updateMerchant(RegisterShopParam registerShopParam) {
+        mongoTemplate.save(paramToMerchant(registerShopParam));
     }
 
     @Override

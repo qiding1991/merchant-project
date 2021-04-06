@@ -27,4 +27,6 @@ public class Merchant {
   private ApplyInfo applyInfo;
   private List<Appraise> appraiseList;
   private Integer thumpCount;
+  private Long registerTime;
+  private Long updateTime;
 }

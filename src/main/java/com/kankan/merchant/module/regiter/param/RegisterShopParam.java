@@ -45,8 +45,8 @@ public class RegisterShopParam {
   private boolean hot;
   private Integer applyStatus;
   private Integer status;
-  private String registerTime;
-  private String updateTime;
+  private Long registerTime;
+  private Long updateTime;
 
   public RegisterShopParam () {}
   public RegisterShopParam (String id, Integer applyStatus) {
