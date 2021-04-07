@@ -6,10 +6,10 @@ import org.springframework.data.annotation.Id;
 import java.util.List;
 
 @Data
-public class MerchantClassify {
-  @Id
-  private String id;//商铺分类
-  private String picture;//分类logo
+public class Category {
+  private String id;//分类ID
+  private String icon;//分类logo
   private String name;//分类名称
-  private List<ItemClassify>  itemTypeList;//商铺详细分类
+  private String parentId;//父级分类ID
+  private Boolean isMenu;//是否餐饮
 }

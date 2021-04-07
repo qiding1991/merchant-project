@@ -1,19 +1,20 @@
 package com.kankan.merchant.service;
 
 import com.kankan.merchant.module.classify.model.ItemClassify;
-import com.kankan.merchant.module.classify.model.MerchantClassify;
+import com.kankan.merchant.module.classify.model.Category;
+import com.kankan.merchant.module.classify.param.CategoryParam;
 
 import java.util.List;
 
-public interface ClassifyService {
+public interface CategoryService {
 
   /**
    * 添加一级分类
    *
-   * @param merchantClassify
+   * @param category
    * @return
    */
-  MerchantClassify addMerchantClassify(MerchantClassify merchantClassify);
+  Category addCategory(Category category);
 
   /**
    * 添加二级分类
@@ -28,14 +29,13 @@ public interface ClassifyService {
    *
    * @return
    */
-  List<MerchantClassify> findAllClassify();
+  List<Category> findAllCategory(String categoryId);
 
   /**
    * 更新
-   *
-   * @param merchantClassify
+   * @param categoryParam
    */
-  void updateMerchantClassify(MerchantClassify merchantClassify);
+  void updateCategory(CategoryParam categoryParam);
 
   /**
    * 更新
@@ -45,7 +45,7 @@ public interface ClassifyService {
   void updateMerchantClassifyItem(ItemClassify itemClassify);
 
 
-  void delMerchantClassify(String classifyId);
+  void delCategory(String categoryId);
 
   void delMerchantClassifyItem(String classifyItemId);
 
