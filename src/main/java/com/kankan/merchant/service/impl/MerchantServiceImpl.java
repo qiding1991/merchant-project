@@ -98,6 +98,7 @@ public class MerchantServiceImpl implements MerchantService {
         registerShopParam.setStatus(merchant.getApplyInfo().getApplyStatus());
         registerShopParam.setRegisterTime(merchant.getRegisterTime());
         registerShopParam.setUpdateTime(merchant.getUpdateTime());
+        registerShopParam.setApplyStatus(merchant.getApplyInfo().getApplyStatus());
         return registerShopParam;
     }
 
