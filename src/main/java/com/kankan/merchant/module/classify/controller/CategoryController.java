@@ -29,13 +29,13 @@ public class CategoryController {
   }
 
   @ApiOperation(value = "查询分类",notes = "不传parentId默认查询所有一级分类,反之查询parentId子分类")
-  @DeleteMapping(value = "query")
+  @GetMapping(value = "query")
   public CommonResponse queryCategory(String parentId) {
     return CommonResponse.success(categoryService.findAllCategory(parentId));
   }
 
   @ApiOperation("更新分类")
-  @DeleteMapping(value = "updateCategory")
+  @PutMapping(value = "update")
   public CommonResponse updateCategory(CategoryParam categoryParam) {
     if (null == categoryParam) {
       return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
@@ -45,7 +45,7 @@ public class CategoryController {
   }
 
   @ApiOperation("删除分类")
-  @DeleteMapping(value = "deleteCategory")
+  @DeleteMapping(value = "delete")
   public CommonResponse delCategory(String categoryId) {
     if (null == categoryId) {
       return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
