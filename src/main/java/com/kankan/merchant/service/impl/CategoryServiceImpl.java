@@ -38,7 +38,7 @@ public class CategoryServiceImpl implements CategoryService {
       Query query = Query.query(Criteria.where("parentId").is(parentId));
       return mongoTemplate.find(query,Category.class);
     }
-    Query query = Query.query(Criteria.where("parentId").is(null));
+    Query query = Query.query(Criteria.where("parentId").is(""));
     return mongoTemplate.find(query,Category.class);
   }
 
