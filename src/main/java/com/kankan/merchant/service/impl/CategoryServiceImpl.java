@@ -11,9 +11,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import java.util.List;
-import java.util.UUID;
+
+import java.util.*;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -40,6 +41,22 @@ public class CategoryServiceImpl implements CategoryService {
     }
     Query query = Query.query(Criteria.where("parentId").is(""));
     return mongoTemplate.find(query,Category.class);
+  }
+
+  @Override
+  public Map<Category,Object> queryCategoryForTree() {
+    Query query = Query.query(Criteria.where("parentId").is(""));
+    List<Category> category1List = mongoTemplate.find(query,Category.class);
+    if (CollectionUtils.isEmpty(category1List)) {
+      return null;
+    }
+    Map<Category,Object> categoryTree = new HashMap<>(category1List.size());
+    for (Category category : category1List) {
+      query = Query.query(Criteria.where("parentId").is(category.getId()));
+      List<Category> category2List = mongoTemplate.find(query,Category.class);
+      categoryTree.put(category,category2List);
+    }
+    return categoryTree;
   }
 
   @Override

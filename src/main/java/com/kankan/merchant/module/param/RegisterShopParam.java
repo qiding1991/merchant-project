@@ -1,4 +1,4 @@
-package com.kankan.merchant.module.regiter.param;
+package com.kankan.merchant.module.param;
 
 import com.kankan.merchant.model.Address;
 import lombok.Data;
@@ -20,6 +20,7 @@ public class RegisterShopParam {
   private Boolean yelp;*/
 
   private String id;
+  private String userId;
   private String shopName;
   private String companyName;
   private String category1;
@@ -42,7 +43,7 @@ public class RegisterShopParam {
   private Integer envScore;
   private Integer flavorScore;
   private Integer serviceScore;
-  private boolean hot;
+  private boolean isHot;
   private Integer applyStatus;
   private Integer status;
   private Long registerTime;

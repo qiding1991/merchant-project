@@ -7,5 +7,5 @@ import org.springframework.data.annotation.Id;
 public class Product {
   @Id
   private String id;
-  private String shopId;
+  private String shopId;//can to update
 }

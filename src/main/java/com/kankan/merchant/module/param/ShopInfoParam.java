@@ -1,4 +1,4 @@
-package com.kankan.merchant.module.regiter.param;
+package com.kankan.merchant.module.param;
 
 import com.kankan.merchant.model.OpenTime;
 import lombok.Data;

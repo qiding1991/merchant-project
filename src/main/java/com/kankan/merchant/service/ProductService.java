@@ -1,7 +1,6 @@
 package com.kankan.merchant.service;
 
-import com.kankan.merchant.model.product.Product;
-
+import com.kankan.merchant.module.merchant.Product;
 import java.util.List;
 
 public interface ProductService {
@@ -15,4 +14,6 @@ public interface ProductService {
   void delUpdateProduct(String id);
 
   Product findById(String id);
+
+  List<Product> findAllProduct (String shopId);
 }

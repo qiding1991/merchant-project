@@ -5,6 +5,7 @@ import com.kankan.merchant.module.classify.model.Category;
 import com.kankan.merchant.module.classify.param.CategoryParam;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CategoryService {
 
@@ -30,6 +31,8 @@ public interface CategoryService {
    * @return
    */
   List<Category> findAllCategory(String categoryId);
+
+  Map<Category,Object> queryCategoryForTree();
 
   /**
    * 更新

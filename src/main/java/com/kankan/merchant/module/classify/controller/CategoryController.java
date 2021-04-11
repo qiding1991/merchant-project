@@ -34,6 +34,13 @@ public class CategoryController {
     return CommonResponse.success(categoryService.findAllCategory(parentId));
   }
 
+  @ApiOperation(value = "查询分类树",notes = "管理端查询分类树")
+  @GetMapping(value = "queryTree")
+  public CommonResponse queryCategoryForTree() {
+    return CommonResponse.success(categoryService.queryCategoryForTree());
+  }
+
+
   @ApiOperation("更新分类")
   @PutMapping(value = "update")
   public CommonResponse updateCategory(CategoryParam categoryParam) {

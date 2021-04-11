@@ -3,7 +3,8 @@ package com.kankan.merchant.service;
 import com.kankan.merchant.config.OrderRule;
 import com.kankan.merchant.config.PriceRange;
 import com.kankan.merchant.module.merchant.Merchant;
-import com.kankan.merchant.module.regiter.param.RegisterShopParam;
+import com.kankan.merchant.module.param.MerchantApplyParam;
+import com.kankan.merchant.module.param.RegisterShopParam;
 
 import java.util.List;
 
@@ -12,6 +13,8 @@ public interface MerchantService {
    * 申请商铺
    */
   RegisterShopParam registerMerchant(RegisterShopParam registerShopParam);
+
+  void applyMerchant(MerchantApplyParam merchantApplyParam);
 
   public List<RegisterShopParam> findShopList();
 
@@ -44,5 +47,7 @@ public interface MerchantService {
 
 
   void thumpMerchant(String shopId);
+
+  List<RegisterShopParam> firstPageMerchant(RegisterShopParam registerShopParam);
 
 }

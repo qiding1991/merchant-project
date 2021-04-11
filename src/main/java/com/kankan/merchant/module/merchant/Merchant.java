@@ -12,10 +12,12 @@ import java.util.List;
 public class Merchant {
   @Id
   private String id;
-  private String classifyId;
-  private String itemId;
+  private String userId;
+  private String category1;
+  private String category2;
   private String name; //商铺名称
   private Address address;
+  private String location;
   private List<Integer> paymentType;//支付方式
   private String phone;
   private String email;

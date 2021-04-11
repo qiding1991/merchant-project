@@ -1,21 +1,28 @@
 package com.kankan.merchant.service.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.kankan.merchant.common.MerchantConstant;
 import com.kankan.merchant.model.Address;
+import com.kankan.merchant.module.classify.model.Category;
 import com.kankan.merchant.module.merchant.ApplyInfo;
-import com.kankan.merchant.module.regiter.param.RegisterShopParam;
+import com.kankan.merchant.module.param.MerchantApplyParam;
+import com.kankan.merchant.module.param.RegisterShopParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import com.kankan.merchant.config.OrderRule;
 import com.kankan.merchant.config.PriceRange;
 import com.kankan.merchant.module.merchant.Merchant;
 import com.kankan.merchant.service.MerchantService;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 
 @Service
@@ -31,11 +38,23 @@ public class MerchantServiceImpl implements MerchantService {
         return new RegisterShopParam(merchant.getId(),merchant.getApplyInfo().getApplyStatus());
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void applyMerchant(MerchantApplyParam merchantApplyParam) {
+        Query query = Query.query(Criteria.where("_id").is(merchantApplyParam.getApplyId()));
+        Update update = new Update();
+        if (!StringUtils.isEmpty(merchantApplyParam.getNewStatus())) {
+            update.set("applyInfo.$.applyStatus", merchantApplyParam.getNewStatus());
+        }
+        mongoTemplate.upsert(query, update, Merchant.class);
+    }
+
     private Merchant paramToMerchant (RegisterShopParam registerShopParam) {
         Merchant merchant = new Merchant();
+        merchant.setUserId(registerShopParam.getUserId());
         merchant.setName(registerShopParam.getShopName());
-        merchant.setClassifyId(registerShopParam.getCategory1());
-        merchant.setItemId(registerShopParam.getCategory2());
+        merchant.setCategory1(registerShopParam.getCategory1());
+        merchant.setCategory2(registerShopParam.getCategory2());
         Address address = new Address();
         address.setArea(registerShopParam.getRegion());
         address.setName(registerShopParam.getAddress());
@@ -67,8 +86,8 @@ public class MerchantServiceImpl implements MerchantService {
         registerShopParam.setId(merchant.getId());
         registerShopParam.setShopName(merchant.getName());
         //registerShopParam.setCompanyName(merchant.getApplyInfo().getCompanyName());
-        registerShopParam.setCategory1(merchant.getClassifyId());
-        registerShopParam.setCategory2(merchant.getItemId());
+        registerShopParam.setCategory1(merchant.getCategory1());
+        registerShopParam.setCategory2(merchant.getCategory2());
         if (null != merchant.getAddress()) {
             registerShopParam.setRegion(merchant.getAddress().getArea());
             registerShopParam.setAddress(merchant.getAddress().getName());
@@ -184,5 +203,27 @@ public class MerchantServiceImpl implements MerchantService {
         Merchant merchant=paramToMerchant(findById(shopId));
         merchant.setThumpCount(merchant.getThumpCount()+1);
         mongoTemplate.save(merchant);
+    }
+
+    @Override
+    public List<RegisterShopParam> firstPageMerchant(RegisterShopParam registerShopParam) {
+        Query query;
+        List<RegisterShopParam> result = new ArrayList<>();
+        List<Merchant> merchantList = new ArrayList<>();
+        if (registerShopParam.isHot()) {
+            query = Query.query(Criteria.where("isHot").is(registerShopParam.isHot()));
+            merchantList = mongoTemplate.find(query, Merchant.class);
+        }
+        if (!StringUtils.isEmpty(registerShopParam.getLocation())) {
+            query = Query.query(Criteria.where("location").is(registerShopParam.getLocation()));
+            merchantList = mongoTemplate.find(query, Merchant.class);
+        }
+        if (!CollectionUtils.isEmpty(merchantList)) {
+            for (Merchant merchant : merchantList) {
+                result.add(merchantToParam(merchant));
+            }
+        }
+        return result;
+        //todo 优惠
     }
 }
