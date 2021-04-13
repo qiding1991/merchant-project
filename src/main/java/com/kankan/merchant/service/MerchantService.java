@@ -4,6 +4,7 @@ import com.kankan.merchant.config.OrderRule;
 import com.kankan.merchant.config.PriceRange;
 import com.kankan.merchant.module.merchant.Merchant;
 import com.kankan.merchant.module.param.MerchantApplyParam;
+import com.kankan.merchant.module.param.MerchantQueryParam;
 import com.kankan.merchant.module.param.RegisterShopParam;
 
 import java.util.List;
@@ -49,5 +50,7 @@ public interface MerchantService {
   void thumpMerchant(String shopId);
 
   List<RegisterShopParam> firstPageMerchant(RegisterShopParam registerShopParam);
+
+  List<RegisterShopParam> chooseShop (MerchantQueryParam merchantQueryParam);
 
 }

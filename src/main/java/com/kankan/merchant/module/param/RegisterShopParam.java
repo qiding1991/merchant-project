@@ -35,7 +35,7 @@ public class RegisterShopParam {
   private String website;
   private String welChat;
   private List<Integer> payType;
-  private String percapitaPrice;
+  private String averagePrice;
   private String file;
   private int sourceFrom;
   private List<String> shopPicture;

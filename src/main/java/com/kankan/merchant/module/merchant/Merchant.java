@@ -27,6 +27,11 @@ public class Merchant {
   private String serviceTime;
   private Boolean isHot;
   private ApplyInfo applyInfo;
+  private String averagePrice;
+  private Integer wholeScore;
+  private Integer envScore;
+  private Integer flavorScore;
+  private Integer serviceScore;
   private List<Appraise> appraiseList;
   private Integer thumpCount;
   private Long registerTime;

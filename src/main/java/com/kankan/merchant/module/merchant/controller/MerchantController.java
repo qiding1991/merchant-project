@@ -1,6 +1,7 @@
 package com.kankan.merchant.module.merchant.controller;
 
 import com.kankan.merchant.module.param.MerchantApplyParam;
+import com.kankan.merchant.module.param.MerchantQueryParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.kankan.merchant.common.CommonResponse;
@@ -80,6 +81,15 @@ public class MerchantController {
             return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
         }
         return CommonResponse.success(merchantService.firstPageMerchant(registerShopParam));
+    }
+
+    @ApiOperation(value = "api 首页筛选商家",notes = "根据二级类目和地区,智能排序,店家筛选")
+    @RequestMapping(value = "/chooseShop", method = RequestMethod.PUT)
+    public CommonResponse findFacePageShop (@RequestBody MerchantQueryParam merchantQueryParam) {
+        if (null == merchantQueryParam) {
+            return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
+        }
+        return CommonResponse.success(merchantService.chooseShop(merchantQueryParam));
     }
 
 }
