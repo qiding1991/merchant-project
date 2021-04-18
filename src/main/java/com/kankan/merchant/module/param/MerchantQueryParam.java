@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class MerchantQueryParam {
 
+    private String category1;
     private String category2;
 
     private int areaCode;
