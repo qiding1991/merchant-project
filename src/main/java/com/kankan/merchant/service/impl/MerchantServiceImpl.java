@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import com.kankan.merchant.common.MerchantConstant;
 import com.kankan.merchant.model.Address;
+import com.kankan.merchant.model.product.Product;
 import com.kankan.merchant.module.classify.model.Category;
 import com.kankan.merchant.module.merchant.ApplyInfo;
 import com.kankan.merchant.module.param.MerchantApplyParam;
@@ -125,7 +126,7 @@ public class MerchantServiceImpl implements MerchantService {
         registerShopParam.setRegisterTime(merchant.getRegisterTime());
         registerShopParam.setUpdateTime(merchant.getUpdateTime());
         registerShopParam.setApplyStatus(merchant.getApplyInfo().getApplyStatus());
-        registerShopParam.setUserId(Integer.valueOf(merchant.getUserId()));
+        registerShopParam.setUserId(merchant.getUserId());
         return registerShopParam;
     }
 
@@ -306,6 +307,30 @@ public class MerchantServiceImpl implements MerchantService {
             for (Merchant merchant : merchantList) {
                 result.add(merchantToParam(merchant));
             }
+        }
+        return result;
+    }
+
+    @Override
+    public RegisterShopParam findShopByUserId(String userId) {
+        Query query = Query.query(Criteria.where("userId").is(userId));
+        Merchant merchant = mongoTemplate.findOne(query, Merchant.class);
+        return merchantToParam(merchant);
+    }
+
+    @Override
+    public List<RegisterShopParam> findAllShopProductList () {
+        List<Merchant> merchantList = mongoTemplate.findAll(Merchant.class);
+        if (CollectionUtils.isEmpty(merchantList)) {
+            return new ArrayList<>();
+        }
+        List<RegisterShopParam> result = new ArrayList<>(merchantList.size());
+        for (Merchant merchant : merchantList) {
+            RegisterShopParam registerShopParam = merchantToParam(merchant);
+            Query query = Query.query(Criteria.where("shopId").is(registerShopParam.getId()));
+            List<Product> productList = mongoTemplate.find(query, Product.class);
+            registerShopParam.setProductList(productList);
+            result.add(registerShopParam);
         }
         return result;
     }

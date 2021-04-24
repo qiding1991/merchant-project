@@ -1,8 +1,10 @@
 package com.kankan.merchant.module.param;
 
 import com.kankan.merchant.model.Address;
+import com.kankan.merchant.model.product.Product;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -20,7 +22,7 @@ public class RegisterShopParam {
   private Boolean yelp;*/
 
   private String id;
-  private Integer userId;
+  private String userId;
   private String shopName;
   private String companyName;
   private String category1;
@@ -48,6 +50,7 @@ public class RegisterShopParam {
   private Integer status;
   private Long registerTime;
   private Long updateTime;
+  private List<Product> productList = new ArrayList<>();
 
   public RegisterShopParam () {}
   public RegisterShopParam (String id, Integer applyStatus) {

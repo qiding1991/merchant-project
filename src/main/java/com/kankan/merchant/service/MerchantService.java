@@ -25,6 +25,10 @@ public interface MerchantService {
 
   void updateMerchant(RegisterShopParam registerShopParam);
 
+  RegisterShopParam findShopByUserId(String userId);
+
+  List<RegisterShopParam> findAllShopProductList ();
+
   void delMerchant(String  shopId);
 
   RegisterShopParam findById(String shopId);

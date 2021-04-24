@@ -4,6 +4,7 @@ import com.kankan.merchant.module.param.MerchantApplyParam;
 import com.kankan.merchant.module.param.MerchantQueryParam;
 import com.kankan.merchant.service.UserPrivilegeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import com.kankan.merchant.common.CommonResponse;
 import com.kankan.merchant.common.ErrorCode;
@@ -79,6 +80,21 @@ public class MerchantController {
     }
     merchantService.updateMerchant(registerShopParam);
     return CommonResponse.success();
+  }
+
+  @ApiOperation(value = "管理后台根据userId查询商家信息")
+  @RequestMapping(value = "/findShopByUserId", method = RequestMethod.GET)
+  public CommonResponse findShopByUserId(String userId) {
+    if (StringUtils.isEmpty(userId)) {
+      return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
+    }
+    return CommonResponse.success(merchantService.findShopByUserId(userId));
+  }
+
+  @ApiOperation(value = "管理后台查询所有商家的所有产品列表服务")
+  @RequestMapping(value = "/findAllShopProductList", method = RequestMethod.GET)
+  public CommonResponse findAllShopProductList () {
+    return CommonResponse.success(merchantService.findAllShopProductList());
   }
 
     @ApiOperation(value = "客户端首页获取商家信息",notes = "type:1-热门,2-附近好店,3-优惠")

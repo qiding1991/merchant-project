@@ -1,7 +1,11 @@
 package com.kankan.merchant.service.impl;
 
 import java.util.List;
+
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.kankan.merchant.module.merchant.Product;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -11,6 +15,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ProductServiceImpl implements ProductService {
+
+    Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -22,6 +29,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product addProduct(Product product) {
+        logger.info("add product info is ==>> {}", product.toString());
         return mongoTemplate.insert(product);
     }
 
