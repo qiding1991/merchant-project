@@ -46,7 +46,7 @@ public class RegisterShopParam {
   private Integer flavorScore;
   private Integer serviceScore;
   private boolean isHot;
-  private Integer applyStatus;
+  private Integer applyStatus = 1;
   private Integer status;
   private Long registerTime;
   private Long updateTime;

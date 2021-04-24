@@ -29,6 +29,16 @@ public class ProductController {
         return CommonResponse.success(productService.addProduct(product));
     }
 
+    @ApiOperation(value = "管理后台审核产品服务")
+    @RequestMapping(value = "/approveApply", method = RequestMethod.POST)
+    public CommonResponse approveApply (@RequestBody CommonProduct product) {
+        if (null == product) {
+            return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
+        }
+        productService.approveApply(product);
+        return CommonResponse.success();
+    }
+
     @ApiOperation(value = "管理后台修改产品服务")
     @RequestMapping(value = "/updateProduct", method = RequestMethod.PUT)
     public CommonResponse updateProduct (@RequestBody CommonProduct product) {

@@ -8,4 +8,5 @@ public class Product {
   @Id
   private String id;
   private String shopId;//can to update
+  private Integer applyStatus = 1;
 }

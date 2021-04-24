@@ -26,12 +26,12 @@ public class CommonProduct extends Product {
     @ApiModelProperty(value = "产品图片列表",notes = "")
     private List<Pictures> productPictures;
 
-    private Long saleTime;//can to update
+    private String saleTime;//can to update
     private Double price;//can to update
     private Boolean isCollection;//app
-    private Long likeNum;//app
+    private Integer likeNum;//app
     private String description;//can to update
-    private Integer productPhone;
+    private String productPhone;
     private Long createTime;
     private Long updateTime;
 

@@ -3,6 +3,7 @@ package com.kankan.merchant.service.impl;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.kankan.merchant.module.merchant.Merchant;
 import com.kankan.merchant.module.merchant.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import com.kankan.merchant.service.ProductService;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -29,8 +32,17 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product addProduct(Product product) {
-        logger.info("add product info is ==>> {}", product.toString());
         return mongoTemplate.insert(product);
+    }
+
+    @Override
+    public void approveApply(Product product) {
+        Query query = Query.query(Criteria.where("_id").is(product.getId()));
+        Update update = new Update();
+        if (!StringUtils.isEmpty(product.getApplyStatus())) {
+            update.set("applyStatus", product.getApplyStatus());
+        }
+        mongoTemplate.upsert(query, update, Product.class);
     }
 
     @Override

@@ -9,6 +9,8 @@ public interface ProductService {
 
   Product addProduct(Product product);
 
+  void approveApply(Product product);
+
   Product updateProduct(Product product);
 
   void delUpdateProduct(String id);

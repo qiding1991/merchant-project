@@ -5,7 +5,6 @@ package com.kankan.merchant.module.merchant;
 import com.kankan.merchant.model.Address;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
-
 import java.util.List;
 
 @Data
