@@ -1,14 +1,19 @@
 package com.kankan.merchant.module.merchant.common;
 
-import com.kankan.merchant.module.merchant.Product;
 import com.kankan.merchant.module.merchant.food.MenuAppraise;
 import com.kankan.merchant.module.merchant.food.Pictures;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 import java.util.List;
 
 @Data
-public class CommonProduct extends Product {
+public class CommonProduct {
+
+    @Id
+    private String id;
+    private String shopId;//can to update
+    private Integer applyStatus = 1;
 
     @ApiModelProperty(value = "产品类型",notes = "")
     private Integer productType;

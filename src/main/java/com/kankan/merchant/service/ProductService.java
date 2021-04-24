@@ -1,23 +1,25 @@
 package com.kankan.merchant.service;
 
 import com.kankan.merchant.module.merchant.Product;
+import com.kankan.merchant.module.merchant.common.CommonProduct;
+
 import java.util.List;
 
 public interface ProductService {
 
-  List<Product> findProduct(String typeId);
+  List<CommonProduct> findProduct(String typeId);
 
-  Product addProduct(Product product);
+  CommonProduct addProduct(CommonProduct product);
 
-  void approveApply(Product product);
+  void approveApply(CommonProduct product);
 
-  Product updateProduct(Product product);
+  CommonProduct updateProduct(CommonProduct product);
 
   void delUpdateProduct(String id);
 
-  Product findById(String id);
+  CommonProduct findById(String id);
 
-  List<Product> findAllProduct (String shopId);
+  List<CommonProduct> findAllProduct (String shopId);
 
-  List<Product> findAllProduct ();
+  List<CommonProduct> findAllProduct ();
 }

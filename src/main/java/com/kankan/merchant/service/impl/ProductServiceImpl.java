@@ -1,7 +1,7 @@
 package com.kankan.merchant.service.impl;
 
 import java.util.List;
-import com.kankan.merchant.module.merchant.Product;
+import com.kankan.merchant.module.merchant.common.CommonProduct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,54 +22,54 @@ public class ProductServiceImpl implements ProductService {
     private MongoTemplate mongoTemplate;
 
     @Override
-    public List<Product> findProduct(String typeId) {
+    public List<CommonProduct> findProduct(String typeId) {
         Query query = Query.query(Criteria.where("typeId").is(typeId));
-        return mongoTemplate.find(query, Product.class);
+        return mongoTemplate.find(query, CommonProduct.class);
     }
 
     @Override
-    public Product addProduct(Product product) {
+    public CommonProduct addProduct(CommonProduct product) {
         return mongoTemplate.insert(product);
     }
 
     @Override
-    public void approveApply(Product product) {
+    public void approveApply(CommonProduct product) {
         Query query = Query.query(Criteria.where("_id").is(product.getId()));
         Update update = new Update();
         if (!StringUtils.isEmpty(product.getApplyStatus())) {
             update.set("applyStatus", product.getApplyStatus());
         }
-        mongoTemplate.upsert(query, update, Product.class);
+        mongoTemplate.upsert(query, update, CommonProduct.class);
     }
 
     @Override
-    public Product updateProduct(Product product) {
+    public CommonProduct updateProduct(CommonProduct product) {
         return mongoTemplate.save(product);
     }
 
     @Override
     public void delUpdateProduct(String id) {
         Query query = Query.query(Criteria.where("_id").is(id));
-        mongoTemplate.remove(query, Product.class);
+        mongoTemplate.remove(query, CommonProduct.class);
     }
 
     @Override
-    public Product findById(String id) {
+    public CommonProduct findById(String id) {
         Query query = Query.query(Criteria.where("_id").is(id));
-        return mongoTemplate.findOne(query, Product.class);
+        return mongoTemplate.findOne(query, CommonProduct.class);
     }
 
     @Override
-    public List<Product> findAllProduct (String shopId) {
+    public List<CommonProduct> findAllProduct (String shopId) {
         if (null != shopId) {
             Query query = Query.query(Criteria.where("shopId").is(shopId));
-            return mongoTemplate.find(query, Product.class);
+            return mongoTemplate.find(query, CommonProduct.class);
         }
-        return mongoTemplate.findAll(Product.class);
+        return mongoTemplate.findAll(CommonProduct.class);
     }
 
 
-    public List<Product> findAllProduct () {
-        return mongoTemplate.findAll(Product.class);
+    public List<CommonProduct> findAllProduct () {
+        return mongoTemplate.findAll(CommonProduct.class);
     }
 }
