@@ -66,4 +66,10 @@ public class ProductController {
         productService.delUpdateProduct(productId);
         return CommonResponse.success();
     }
+
+    @ApiOperation(value = "管理后台查询所有产品服务")
+    @RequestMapping(value = "/findAllProduct", method = RequestMethod.GET)
+    public CommonResponse findProduct () {
+        return CommonResponse.success(productService.findAllProduct());
+    }
 }

@@ -18,4 +18,6 @@ public interface ProductService {
   Product findById(String id);
 
   List<Product> findAllProduct (String shopId);
+
+  List<Product> findAllProduct ();
 }

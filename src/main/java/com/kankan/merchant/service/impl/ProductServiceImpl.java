@@ -1,9 +1,6 @@
 package com.kankan.merchant.service.impl;
 
 import java.util.List;
-
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import com.kankan.merchant.module.merchant.Merchant;
 import com.kankan.merchant.module.merchant.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +65,11 @@ public class ProductServiceImpl implements ProductService {
             Query query = Query.query(Criteria.where("shopId").is(shopId));
             return mongoTemplate.find(query, Product.class);
         }
+        return mongoTemplate.findAll(Product.class);
+    }
+
+
+    public List<Product> findAllProduct () {
         return mongoTemplate.findAll(Product.class);
     }
 }
