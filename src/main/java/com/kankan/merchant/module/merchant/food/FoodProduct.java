@@ -5,5 +5,5 @@ import com.kankan.merchant.module.merchant.Product;
 import java.util.List;
 
 public class FoodProduct extends Product {
-  List<MeunAppraise> meunAppraiseList;
+  List<MenuAppraise> meunAppraiseList;
 }

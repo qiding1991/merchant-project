@@ -53,7 +53,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     private Merchant paramToMerchant (RegisterShopParam registerShopParam) {
         Merchant merchant = new Merchant();
-        merchant.setUserId(registerShopParam.getUserId());
+        merchant.setUserId(String.valueOf(registerShopParam.getUserId()));
         merchant.setName(registerShopParam.getShopName());
         merchant.setCategory1(registerShopParam.getCategory1());
         merchant.setCategory2(registerShopParam.getCategory2());
@@ -125,7 +125,7 @@ public class MerchantServiceImpl implements MerchantService {
         registerShopParam.setRegisterTime(merchant.getRegisterTime());
         registerShopParam.setUpdateTime(merchant.getUpdateTime());
         registerShopParam.setApplyStatus(merchant.getApplyInfo().getApplyStatus());
-        registerShopParam.setUserId(merchant.getUserId());
+        registerShopParam.setUserId(Integer.valueOf(merchant.getUserId()));
         return registerShopParam;
     }
 

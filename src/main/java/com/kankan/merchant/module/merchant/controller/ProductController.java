@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Api(tags = "管理后台-产品")
+@Api(tags = "产品")
 @RequestMapping("admin/product")
 public class ProductController {
 

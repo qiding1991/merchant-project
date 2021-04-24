@@ -20,7 +20,7 @@ public class RegisterShopParam {
   private Boolean yelp;*/
 
   private String id;
-  private String userId;
+  private Integer userId;
   private String shopName;
   private String companyName;
   private String category1;

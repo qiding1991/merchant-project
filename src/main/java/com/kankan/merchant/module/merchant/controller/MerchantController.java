@@ -12,7 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @CrossOrigin(origins = "*")
-@Api(tags = "管理后台-商家")
+@Api(tags = "后台-商家")
 @RequestMapping("admin/merchant")
 @RestController
 public class MerchantController {
@@ -74,7 +74,7 @@ public class MerchantController {
         return CommonResponse.success();
     }
 
-    @ApiOperation(value = "api 首页获取商家信息",notes = "type:1-热门,2-附近好店,3-优惠")
+    @ApiOperation(value = "客户端首页获取商家信息",notes = "type:1-热门,2-附近好店,3-优惠")
     @RequestMapping(value = "/findFacePageShop", method = RequestMethod.PUT)
     public CommonResponse findFacePageShop (@RequestBody RegisterShopParam registerShopParam) {
         if (null == registerShopParam) {
@@ -83,7 +83,7 @@ public class MerchantController {
         return CommonResponse.success(merchantService.firstPageMerchant(registerShopParam));
     }
 
-    @ApiOperation(value = "api 首页筛选商家",notes = "根据二级类目和地区,智能排序,店家筛选")
+    @ApiOperation(value = "客户端首页筛选商家",notes = "根据二级类目和地区,智能排序,店家筛选")
     @RequestMapping(value = "/chooseShop", method = RequestMethod.PUT)
     public CommonResponse findFacePageShop (@RequestBody MerchantQueryParam merchantQueryParam) {
         if (null == merchantQueryParam) {
