@@ -6,3 +6,7 @@ spring:
       uri: mongodb://127.0.0.1:27017/merchant
 server:
   port: 8084
+
+user:
+  privilege:
+      addPrivilegeToUser: http://127.0.0.1:8081/admin/privilege/addPrivilegeToUser
