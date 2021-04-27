@@ -62,7 +62,7 @@ public class MerchantServiceImpl implements MerchantService {
         Address address = new Address();
         address.setArea(registerShopParam.getRegion());
         address.setName(registerShopParam.getAddress());
-        if (StringUtils.isEmpty(registerShopParam.getLocation())) {
+        if (!StringUtils.isEmpty(registerShopParam.getLocation())) {
             address.setLang(Double.parseDouble(registerShopParam.getLocation().split(";")[0]));
             address.setLat(Double.parseDouble(registerShopParam.getLocation().split(";")[1]));
         }
