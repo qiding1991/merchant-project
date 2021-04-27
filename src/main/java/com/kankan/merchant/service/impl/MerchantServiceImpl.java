@@ -54,6 +54,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     private Merchant paramToMerchant (RegisterShopParam registerShopParam) {
         Merchant merchant = new Merchant();
+        merchant.setId(registerShopParam.getId());
         merchant.setUserId(String.valueOf(registerShopParam.getUserId()));
         merchant.setName(registerShopParam.getShopName());
         merchant.setCategory1(registerShopParam.getCategory1());
@@ -61,11 +62,15 @@ public class MerchantServiceImpl implements MerchantService {
         Address address = new Address();
         address.setArea(registerShopParam.getRegion());
         address.setName(registerShopParam.getAddress());
-        address.setLang(Double.parseDouble(registerShopParam.getLocation().split(";")[0]));
-        address.setLat(Double.parseDouble(registerShopParam.getLocation().split(";")[1]));
+        if (StringUtils.isEmpty(registerShopParam.getLocation())) {
+            address.setLang(Double.parseDouble(registerShopParam.getLocation().split(";")[0]));
+            address.setLat(Double.parseDouble(registerShopParam.getLocation().split(";")[1]));
+        }
         merchant.setAddress(address);
         ApplyInfo applyInfo = new ApplyInfo();
-        applyInfo.setPhotos(Arrays.asList(registerShopParam.getFile().split(";")));
+        if (!StringUtils.isEmpty(registerShopParam.getFile())) {
+            applyInfo.setPhotos(Arrays.asList(registerShopParam.getFile().split(";")));
+        }
         applyInfo.setYelp(MerchantConstant.merchant_source_yelp == registerShopParam.getSourceFrom());
         applyInfo.setApplyStatus(MerchantConstant.merchant_wait_apply);
         merchant.setAveragePrice(registerShopParam.getAveragePrice());
@@ -114,6 +119,7 @@ public class MerchantServiceImpl implements MerchantService {
             registerShopParam.setFile(merchant.getApplyInfo().getIDUrl());
             registerShopParam.setSourceFrom(merchant.getApplyInfo().getYelp()?0:1);
             registerShopParam.setShopPicture(merchant.getApplyInfo().getPhotos());
+            registerShopParam.setApplyStatus(merchant.getApplyInfo().getApplyStatus());
         }
         registerShopParam.setWholeScore(merchant.getWholeScore());
         registerShopParam.setEnvScore(merchant.getEnvScore());
@@ -122,10 +128,8 @@ public class MerchantServiceImpl implements MerchantService {
         if (null != merchant.getIsHot()) {
             registerShopParam.setHot(merchant.getIsHot());
         }
-        registerShopParam.setStatus(merchant.getApplyInfo().getApplyStatus());
         registerShopParam.setRegisterTime(merchant.getRegisterTime());
         registerShopParam.setUpdateTime(merchant.getUpdateTime());
-        registerShopParam.setApplyStatus(merchant.getApplyInfo().getApplyStatus());
         registerShopParam.setUserId(merchant.getUserId());
         return registerShopParam;
     }
