@@ -88,6 +88,8 @@ public class MerchantServiceImpl implements MerchantService {
         merchant.setServiceTime(registerShopParam.getServiceTime());
         merchant.setRegisterTime(registerShopParam.getRegisterTime());
         merchant.setUpdateTime(registerShopParam.getUpdateTime());
+        merchant.setHot(registerShopParam.getHot());
+        merchant.getApplyInfo().setCompanyName(registerShopParam.getCompanyName());
         return merchant;
     }
 
@@ -125,8 +127,8 @@ public class MerchantServiceImpl implements MerchantService {
         registerShopParam.setEnvScore(merchant.getEnvScore());
         registerShopParam.setFlavorScore(merchant.getFlavorScore());
         registerShopParam.setServiceScore(merchant.getServiceScore());
-        if (null != merchant.getIsHot()) {
-            registerShopParam.setHot(merchant.getIsHot());
+        if (null != merchant.getHot()) {
+            registerShopParam.setHot(merchant.getHot());
         }
         registerShopParam.setRegisterTime(merchant.getRegisterTime());
         registerShopParam.setUpdateTime(merchant.getUpdateTime());
@@ -173,7 +175,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public List<Merchant> findHotShop() {
-        Query query = Query.query(Criteria.where("isHot").is(true));
+        Query query = Query.query(Criteria.where("hot").is(true));
         return mongoTemplate.find(query, Merchant.class);
     }
 
@@ -229,8 +231,8 @@ public class MerchantServiceImpl implements MerchantService {
         }
         List<RegisterShopParam> result = new ArrayList<>();
         List<Merchant> merchantList = new ArrayList<>();
-        if (registerShopParam.isHot()) {
-            query.addCriteria(Criteria.where("isHot").is(registerShopParam.isHot()));
+        if (!StringUtils.isEmpty(registerShopParam.getHot())) {
+            query.addCriteria(Criteria.where("hot").is(registerShopParam.getHot()));
             merchantList = mongoTemplate.find(query, Merchant.class);
         }
         if (!StringUtils.isEmpty(registerShopParam.getLocation())) {

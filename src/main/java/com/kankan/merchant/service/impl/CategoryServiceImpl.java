@@ -5,6 +5,7 @@ import com.kankan.merchant.module.classify.model.Category;
 import com.kankan.merchant.module.classify.param.CategoryParam;
 import com.kankan.merchant.service.CategoryService;
 import com.mongodb.client.result.UpdateResult;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -39,13 +40,13 @@ public class CategoryServiceImpl implements CategoryService {
       Query query = Query.query(Criteria.where("parentId").is(parentId));
       return mongoTemplate.find(query,Category.class);
     }
-    Query query = Query.query(Criteria.where("parentId").is(""));
+    Query query = Query.query(Criteria.where("parentId").is(null));
     return mongoTemplate.find(query,Category.class);
   }
 
   @Override
   public Map<Category,Object> queryCategoryForTree() {
-    Query query = Query.query(Criteria.where("parentId").is(""));
+    Query query = Query.query(Criteria.where("parentId").is(null));
     List<Category> category1List = mongoTemplate.find(query,Category.class);
     if (CollectionUtils.isEmpty(category1List)) {
       return null;
@@ -75,15 +76,17 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public void updateCategory(CategoryParam categoryParam) {
-      Query query = Query.query(Criteria.where("_id").is(categoryParam.getId()));
+      /*Query query = Query.query(Criteria.where("_id").is(categoryParam.getId()));
       Update update = new Update();
       if (!StringUtils.isEmpty(categoryParam.getName())) {
         update.set("name", categoryParam.getName());
       }
       if (!StringUtils.isEmpty(categoryParam.getName())) {
         update.set("icon", categoryParam.getIcon());
-      }
-      mongoTemplate.upsert(query, update, Category.class);
+      }*/
+    Category category = new Category();
+    BeanUtils.copyProperties(categoryParam,category);
+      mongoTemplate.save(category);
   }
 
   public void addMerchantItemClassify(String classifyId, List<ItemClassify> itemClassify) {

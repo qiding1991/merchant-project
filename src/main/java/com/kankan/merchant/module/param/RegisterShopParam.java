@@ -41,11 +41,11 @@ public class RegisterShopParam {
   private String file;
   private int sourceFrom;
   private List<String> shopPicture;
-  private Integer wholeScore;
-  private Integer envScore;
-  private Integer flavorScore;
-  private Integer serviceScore;
-  private boolean isHot;
+  private String wholeScore;
+  private String envScore;
+  private String flavorScore;
+  private String serviceScore;
+  private String hot;
   private Integer applyStatus = 1;
   private Integer status;
   private Long registerTime;
