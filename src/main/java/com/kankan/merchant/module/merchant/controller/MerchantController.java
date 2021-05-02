@@ -2,7 +2,6 @@ package com.kankan.merchant.module.merchant.controller;
 
 import com.kankan.merchant.module.param.MerchantApplyParam;
 import com.kankan.merchant.module.param.MerchantQueryParam;
-import com.kankan.merchant.service.UserPrivilegeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +20,6 @@ public class MerchantController {
 
   @Autowired
   private MerchantService merchantService;
-  @Autowired
-  private UserPrivilegeService userPrivilegeService;
 
 
   @ApiOperation(value = "管理后台商家注册服务")
@@ -41,9 +38,6 @@ public class MerchantController {
       return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
     }
     merchantService.applyMerchant(merchantApplyParam);
-    //给商家用户添加权限
-    RegisterShopParam registerShopParam=  merchantService.findById(merchantApplyParam.getApplyId());
-    userPrivilegeService.addPrivilegeToUser(registerShopParam.getUserId(), merchantApplyParam.getNewApplyUserPrivilege());
     return CommonResponse.success();
   }
 

@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 import com.kankan.merchant.common.MerchantConstant;
 import com.kankan.merchant.model.Address;
 import com.kankan.merchant.model.product.Product;
-import com.kankan.merchant.module.classify.model.Category;
 import com.kankan.merchant.module.merchant.ApplyInfo;
 import com.kankan.merchant.module.param.MerchantApplyParam;
 import com.kankan.merchant.module.param.MerchantQueryParam;
 import com.kankan.merchant.module.param.RegisterShopParam;
+import com.kankan.merchant.service.UserPrivilegeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -32,6 +32,8 @@ import org.springframework.util.StringUtils;
 public class MerchantServiceImpl implements MerchantService {
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    private UserPrivilegeService userPrivilegeService;
 
     @Override
     public RegisterShopParam registerMerchant(RegisterShopParam registerShopParam) {
@@ -50,6 +52,9 @@ public class MerchantServiceImpl implements MerchantService {
             update.set("applyInfo.$.applyStatus", merchantApplyParam.getNewStatus());
         }
         mongoTemplate.upsert(query, update, Merchant.class);
+        //给商家用户添加权限
+        RegisterShopParam registerShopParam = this.findById(merchantApplyParam.getApplyId());
+        userPrivilegeService.addPrivilegeToUser(registerShopParam.getUserId(), merchantApplyParam.getNewApplyUserPrivilege());
     }
 
     private Merchant paramToMerchant (RegisterShopParam registerShopParam) {
@@ -150,7 +155,17 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public void updateMerchant(RegisterShopParam registerShopParam) {
-        mongoTemplate.save(paramToMerchant(registerShopParam));
+        //mongoTemplate.save(paramToMerchant(registerShopParam));
+        Query query = Query.query(Criteria.where("_id").is(registerShopParam.getId()));
+        mongoTemplate.upsert(query,buildUpdate(registerShopParam),Merchant.class);
+    }
+
+    private Update buildUpdate(RegisterShopParam param) {
+        Update update = new Update();
+        if (!StringUtils.isEmpty(param.getHot())) {
+            update.set("hot",param.getHot());
+        }
+        return update;
     }
 
     @Override

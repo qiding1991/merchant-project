@@ -13,7 +13,7 @@ public interface ProductService {
 
   void approveApply(CommonProduct product);
 
-  CommonProduct updateProduct(CommonProduct product);
+  void updateProduct(CommonProduct product);
 
   void delUpdateProduct(String id);
 

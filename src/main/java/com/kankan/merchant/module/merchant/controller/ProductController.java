@@ -45,7 +45,8 @@ public class ProductController {
         if (null == product) {
             return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
         }
-        return CommonResponse.success(productService.updateProduct(product));
+        productService.updateProduct(product);
+        return CommonResponse.success();
     }
 
     @ApiOperation(value = "管理后台查询产品服务")

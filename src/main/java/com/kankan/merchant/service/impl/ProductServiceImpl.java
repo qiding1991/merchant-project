@@ -1,7 +1,10 @@
 package com.kankan.merchant.service.impl;
 
 import java.util.List;
+
+import com.kankan.merchant.module.merchant.Merchant;
 import com.kankan.merchant.module.merchant.common.CommonProduct;
+import com.kankan.merchant.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public CommonProduct addProduct(CommonProduct product) {
+        product.setCreateTime(DateUtils.getCurDateTime());
         return mongoTemplate.insert(product);
     }
 
@@ -43,8 +47,34 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CommonProduct updateProduct(CommonProduct product) {
-        return mongoTemplate.save(product);
+    public void updateProduct(CommonProduct product) {
+        Query query = Query.query(Criteria.where("_id").is(product.getId()));
+        mongoTemplate.upsert(query,buildUpdate(product), CommonProduct.class);
+
+    }
+
+    private Update buildUpdate (CommonProduct product) {
+        Update update = new Update();
+        if (!StringUtils.isEmpty(product.getFacePicture())) {
+            update.set("facePicture",product.getFacePicture());
+        }
+        if (!StringUtils.isEmpty(product.getFacePicture())) {
+            update.set("productName",product.getProductName());
+        }
+        if (!StringUtils.isEmpty(product.getFacePicture())) {
+            update.set("shopId",product.getShopId());
+        }
+        if (StringUtils.isEmpty(product.getFacePicture())) {
+            update.set("saleTime",product.getSaleTime());
+        }
+        if (StringUtils.isEmpty(product.getFacePicture())) {
+            update.set("price",product.getPrice());
+        }
+        if (StringUtils.isEmpty(product.getFacePicture())) {
+            update.set("description",product.getDescription());
+        }
+        update.set("updateTime", DateUtils.getCurDateTime());
+        return update;
     }
 
     @Override

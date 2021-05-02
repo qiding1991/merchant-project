@@ -22,7 +22,7 @@ public class CommonProduct {
     @ApiModelProperty(value = "菜单评价列表",notes = "")
     List<MenuAppraise> menuAppraiseList;
 
-    @ApiModelProperty(value = "店铺评价列表",notes = "")
+    @ApiModelProperty(value = "产品评价列表",notes = "")
     List<CommonAppraise> appraiseList;
     @ApiModelProperty(value = "产品名称",notes = "")
     private String productName;//can to update
@@ -37,7 +37,7 @@ public class CommonProduct {
     private Integer likeNum;//app
     private String description;//can to update
     private String productPhone;
-    private Long createTime;
-    private Long updateTime;
+    private String createTime;
+    private String updateTime;
 
 }
