@@ -3,6 +3,7 @@ package com.kankan.merchant.service.impl;
 import com.kankan.merchant.module.merchant.common.CommonAppraise;
 import com.kankan.merchant.module.param.AppraiseParam;
 import com.kankan.merchant.service.AppraiseService;
+import com.kankan.merchant.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -19,6 +20,7 @@ public class AppraiseServiceImpl implements AppraiseService {
 
     @Override
     public CommonAppraise userAppraise(CommonAppraise commonAppraise) {
+        commonAppraise.setTime(DateUtils.getCurDateTime());
         return mongoTemplate.insert(commonAppraise);
     }
 

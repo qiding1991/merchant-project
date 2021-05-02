@@ -42,8 +42,8 @@ public class ProductServiceImpl implements ProductService {
         Update update = new Update();
         if (!StringUtils.isEmpty(product.getApplyStatus())) {
             update.set("applyStatus", product.getApplyStatus());
+            mongoTemplate.upsert(query, update, CommonProduct.class);
         }
-        mongoTemplate.upsert(query, update, CommonProduct.class);
     }
 
     @Override
@@ -58,19 +58,19 @@ public class ProductServiceImpl implements ProductService {
         if (!StringUtils.isEmpty(product.getFacePicture())) {
             update.set("facePicture",product.getFacePicture());
         }
-        if (!StringUtils.isEmpty(product.getFacePicture())) {
+        if (!StringUtils.isEmpty(product.getProductName())) {
             update.set("productName",product.getProductName());
         }
-        if (!StringUtils.isEmpty(product.getFacePicture())) {
+        if (!StringUtils.isEmpty(product.getShopId())) {
             update.set("shopId",product.getShopId());
         }
-        if (StringUtils.isEmpty(product.getFacePicture())) {
+        if (!StringUtils.isEmpty(product.getSaleTime())) {
             update.set("saleTime",product.getSaleTime());
         }
-        if (StringUtils.isEmpty(product.getFacePicture())) {
+        if (!StringUtils.isEmpty(product.getPrice())) {
             update.set("price",product.getPrice());
         }
-        if (StringUtils.isEmpty(product.getFacePicture())) {
+        if (!StringUtils.isEmpty(product.getDescription())) {
             update.set("description",product.getDescription());
         }
         update.set("updateTime", DateUtils.getCurDateTime());
