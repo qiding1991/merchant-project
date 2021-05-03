@@ -1,9 +1,8 @@
 package com.kankan.merchant.service.impl;
 
 import java.util.List;
-
-import com.kankan.merchant.module.merchant.Merchant;
 import com.kankan.merchant.module.merchant.common.CommonProduct;
+import com.kankan.merchant.module.param.ProductUpdateParam;
 import com.kankan.merchant.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,13 +46,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void updateProduct(CommonProduct product) {
-        Query query = Query.query(Criteria.where("_id").is(product.getId()));
+    public void updateProduct(ProductUpdateParam product) {
+        Query query = Query.query(Criteria.where("_id").is(product.getProductId()));
         mongoTemplate.upsert(query,buildUpdate(product), CommonProduct.class);
-
     }
 
-    private Update buildUpdate (CommonProduct product) {
+    private Update buildUpdate (ProductUpdateParam product) {
         Update update = new Update();
         if (!StringUtils.isEmpty(product.getFacePicture())) {
             update.set("facePicture",product.getFacePicture());

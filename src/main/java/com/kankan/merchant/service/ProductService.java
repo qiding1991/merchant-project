@@ -2,7 +2,7 @@ package com.kankan.merchant.service;
 
 import com.kankan.merchant.module.merchant.Product;
 import com.kankan.merchant.module.merchant.common.CommonProduct;
-
+import com.kankan.merchant.module.param.ProductUpdateParam;
 import java.util.List;
 
 public interface ProductService {
@@ -13,7 +13,7 @@ public interface ProductService {
 
   void approveApply(CommonProduct product);
 
-  void updateProduct(CommonProduct product);
+  void updateProduct(ProductUpdateParam product);
 
   void delUpdateProduct(String id);
 

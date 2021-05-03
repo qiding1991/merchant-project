@@ -3,6 +3,7 @@ package com.kankan.merchant.module.merchant.controller;
 import com.kankan.merchant.common.CommonResponse;
 import com.kankan.merchant.common.ErrorCode;
 import com.kankan.merchant.module.merchant.common.CommonProduct;
+import com.kankan.merchant.module.param.ProductUpdateParam;
 import com.kankan.merchant.service.ProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,7 +42,7 @@ public class ProductController {
 
     @ApiOperation(value = "管理后台修改产品服务")
     @RequestMapping(value = "/updateProduct", method = RequestMethod.PUT)
-    public CommonResponse updateProduct (@RequestBody CommonProduct product) {
+    public CommonResponse updateProduct (@RequestBody ProductUpdateParam product) {
         if (null == product) {
             return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
         }
