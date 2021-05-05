@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import java.util.List;
@@ -39,5 +40,15 @@ public class AppraiseServiceImpl implements AppraiseService {
             query.addCriteria(Criteria.where("userId").is(commonAppraise.getUserId()));
         }
         return mongoTemplate.find(query,CommonAppraise.class);
+    }
+
+    @Override
+    public void markLikeAppraise(String appraiseId) {
+        Update update = new Update();
+        if (!StringUtils.isEmpty(appraiseId)) {
+            Query query = Query.query(Criteria.where("_id").is(appraiseId));
+            update.inc("likeNum",1);
+            mongoTemplate.upsert(query,update,CommonAppraise.class);
+        }
     }
 }

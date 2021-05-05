@@ -6,9 +6,6 @@ import lombok.Data;
 public class Pictures {
 
     private String id;
-    private String name;
     private Integer type;
     private String url;
-    private String createTime;
-
 }

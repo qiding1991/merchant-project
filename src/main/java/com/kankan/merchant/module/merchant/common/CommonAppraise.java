@@ -28,9 +28,11 @@ public class CommonAppraise extends Appraise {
     @ApiModelProperty(value = "人均", notes = "", required = true)
     private String averagePrice;
     @ApiModelProperty(value = "评价图片", notes = "", required = true)
-    private List<Pictures> productPictures;
+    private List<Pictures> appraisePictures;
     @ApiModelProperty(value = "相关推荐", notes = "", required = false)
     private List<String> recommends;
+    @ApiModelProperty(value = "评价时间", notes = "", required = false)
+    private String createTime;
 
 
 }

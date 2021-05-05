@@ -31,4 +31,11 @@ public class AppraiseController {
     public CommonResponse getAppraise (AppraiseParam commonAppraise) {
         return CommonResponse.success(appraiseService.appraiseList(commonAppraise));
     }
+
+    @ApiOperation(value = "客户端评价点赞服务")
+    @PutMapping
+    public CommonResponse markLikeAppraise (String appraiseId) {
+        appraiseService.markLikeAppraise(appraiseId);
+        return CommonResponse.success();
+    }
 }

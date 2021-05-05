@@ -11,4 +11,6 @@ public interface AppraiseService {
 
    List<CommonAppraise> appraiseList (AppraiseParam commonAppraise);
 
+   void markLikeAppraise (String appraiseId);
+
 }
