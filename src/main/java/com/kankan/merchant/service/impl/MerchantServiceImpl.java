@@ -14,6 +14,7 @@ import com.kankan.merchant.module.param.RegisterShopParam;
 import com.kankan.merchant.service.UserPrivilegeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -70,6 +71,10 @@ public class MerchantServiceImpl implements MerchantService {
         if (!StringUtils.isEmpty(registerShopParam.getLocation())) {
             address.setLang(Double.parseDouble(registerShopParam.getLocation().split(";")[0]));
             address.setLat(Double.parseDouble(registerShopParam.getLocation().split(";")[1]));
+            List<Double> locationData = new ArrayList<>(2);
+            locationData.add(address.getLang());
+            locationData.add(address.getLat());
+            merchant.setLocation(locationData);
         }
         merchant.setAddress(address);
         ApplyInfo applyInfo = new ApplyInfo();
@@ -251,7 +256,9 @@ public class MerchantServiceImpl implements MerchantService {
             merchantList = mongoTemplate.find(query, Merchant.class);
         }
         if (!StringUtils.isEmpty(registerShopParam.getLocation())) {
-            query.addCriteria(Criteria.where("location").is(registerShopParam.getLocation()));
+            String [] locationArray = registerShopParam.getLocation().split(";");
+            Point point = new Point(Double.parseDouble(locationArray[0]),Double.parseDouble(locationArray[1]));
+            query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000.00));
             merchantList = mongoTemplate.find(query, Merchant.class);
         }
         if (!CollectionUtils.isEmpty(merchantList)) {
@@ -269,12 +276,13 @@ public class MerchantServiceImpl implements MerchantService {
             query.addCriteria(Criteria.where("category2").is(merchantQueryParam.getCategory2()));
         }
         if (merchantQueryParam.getAreaCode() > 0) {
-            //todo 商家需要添加地区字段
             query.addCriteria(Criteria.where("address.$.area").is(merchantQueryParam.getAreaCode()));
         }
         if (merchantQueryParam.getIntelligentType() > 0) {
             if (1 == merchantQueryParam.getIntelligentType() && null != merchantQueryParam.getLocation()) {
-                query.addCriteria(Criteria.where("location").is(merchantQueryParam.getLocation()));
+                String [] locationArray = merchantQueryParam.getLocation().split(";");
+                Point point = new Point(Double.parseDouble(locationArray[0]),Double.parseDouble(locationArray[1]));
+                query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000.00));query.addCriteria(Criteria.where("location").is(merchantQueryParam.getLocation()));
             }
             if (2 == merchantQueryParam.getIntelligentType()) {
                 query.with(Sort.by(Sort.Order.desc("wholeScore")));

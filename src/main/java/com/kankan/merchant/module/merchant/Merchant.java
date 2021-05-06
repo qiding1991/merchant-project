@@ -5,8 +5,11 @@ package com.kankan.merchant.module.merchant;
 import com.kankan.merchant.model.Address;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
+@Document
 @Data
 public class Merchant {
   @Id
@@ -16,7 +19,8 @@ public class Merchant {
   private String category2;
   private String name; //商铺名称
   private Address address;
-  private String location;
+  @GeoSpatialIndexed
+  private List<Double> location;
   private List<Integer> paymentType;//支付方式
   private String phone;
   private String email;

@@ -2,7 +2,6 @@ package com.kankan.merchant.service;
 
 import com.kankan.merchant.module.merchant.common.CommonAppraise;
 import com.kankan.merchant.module.param.AppraiseParam;
-
 import java.util.List;
 
 public interface AppraiseService {
@@ -11,6 +10,6 @@ public interface AppraiseService {
 
    List<CommonAppraise> appraiseList (AppraiseParam commonAppraise);
 
-   void markLikeAppraise (String appraiseId);
+   void markLikeAppraise (String appraiseId,Integer type);
 
 }

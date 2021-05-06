@@ -43,11 +43,15 @@ public class AppraiseServiceImpl implements AppraiseService {
     }
 
     @Override
-    public void markLikeAppraise(String appraiseId) {
+    public void markLikeAppraise(String appraiseId,Integer type) {
         Update update = new Update();
         if (!StringUtils.isEmpty(appraiseId)) {
             Query query = Query.query(Criteria.where("_id").is(appraiseId));
-            update.inc("likeNum",1);
+            if (0 < type) {
+                update.inc("likeNum",1);
+            } else {
+                update.inc("likeNum",-1);
+            }
             mongoTemplate.upsert(query,update,CommonAppraise.class);
         }
     }
