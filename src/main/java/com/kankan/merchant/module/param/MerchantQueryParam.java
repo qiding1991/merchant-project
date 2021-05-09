@@ -16,6 +16,6 @@ public class MerchantQueryParam {
     private int shopType;
     private int price;
     private int payType;
-    private int wholeScore;
+    private String wholeScore;
 
 }

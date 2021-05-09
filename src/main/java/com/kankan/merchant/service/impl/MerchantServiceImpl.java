@@ -81,7 +81,10 @@ public class MerchantServiceImpl implements MerchantService {
         merchant.setAddress(address);
         ApplyInfo applyInfo = new ApplyInfo();
         if (!StringUtils.isEmpty(registerShopParam.getFile())) {
-            applyInfo.setPhotos(Arrays.asList(registerShopParam.getFile().split(";")));
+            applyInfo.setIDUrl(registerShopParam.getFile());
+        }
+        if (!CollectionUtils.isEmpty(registerShopParam.getShopPicture())) {
+            applyInfo.setPhotos(registerShopParam.getShopPicture());
         }
         applyInfo.setYelp(MerchantConstant.merchant_source_yelp == registerShopParam.getSourceFrom());
         applyInfo.setApplyStatus(MerchantConstant.merchant_wait_apply);
@@ -134,6 +137,7 @@ public class MerchantServiceImpl implements MerchantService {
             registerShopParam.setSourceFrom(merchant.getApplyInfo().getYelp()?0:1);
             registerShopParam.setShopPicture(merchant.getApplyInfo().getPhotos());
             registerShopParam.setApplyStatus(merchant.getApplyInfo().getApplyStatus());
+            registerShopParam.setFile(merchant.getApplyInfo().getIDUrl());
         }
         registerShopParam.setWholeScore(merchant.getWholeScore());
         registerShopParam.setEnvScore(merchant.getEnvScore());
@@ -259,10 +263,10 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public List<RegisterShopParam> firstPageMerchant(RegisterShopParam registerShopParam) {
         Query query = new Query();
-        if (!StringUtils.isEmpty(registerShopParam.getCategory1())) {
+        if (!StringUtils.isEmpty(registerShopParam.getCategory1()) && !"0".equals(registerShopParam.getCategory1())) {
             query.addCriteria(Criteria.where("category1").is(registerShopParam.getCategory1()));
         }
-        if (!StringUtils.isEmpty(registerShopParam.getCategory2())) {
+        if (!StringUtils.isEmpty(registerShopParam.getCategory2()) && !"0".equals(registerShopParam.getCategory1())) {
             query.addCriteria(Criteria.where("category2").is(registerShopParam.getCategory2()));
         }
         List<RegisterShopParam> result = new ArrayList<>();
@@ -310,7 +314,7 @@ public class MerchantServiceImpl implements MerchantService {
                 query.with(Sort.by(Sort.Order.desc("averagePrice")));
             }
         }
-        if (merchantQueryParam.getShopType() > 0) {
+        /*if (merchantQueryParam.getShopType() > 0) {
             //todo 商家需要添加商家类型字段
             switch (merchantQueryParam.getShopType()) {
                 case 1:
@@ -323,7 +327,7 @@ public class MerchantServiceImpl implements MerchantService {
                     query.addCriteria(Criteria.where("averagePrice").lt(60));
                     break;
             }
-        }
+        }*/
         if (merchantQueryParam.getPrice() > 0) {
             switch (merchantQueryParam.getPrice()) {
                 case 1:
@@ -343,8 +347,10 @@ public class MerchantServiceImpl implements MerchantService {
         if (merchantQueryParam.getPayType() > 0) {
             query.addCriteria(Criteria.where("paymentType").is(merchantQueryParam.getPayType()));
         }
-        if (merchantQueryParam.getWholeScore() > 0) {
-            query.addCriteria(Criteria.where("wholeScore").is(merchantQueryParam.getWholeScore()));
+        if (!StringUtils.isEmpty(merchantQueryParam.getWholeScore())) {
+            String [] scoreLimit = merchantQueryParam.getWholeScore().split(",");
+            query.addCriteria(Criteria.where("wholeScore").gt(scoreLimit[0]));
+            query.addCriteria(Criteria.where("wholeScore").lt(scoreLimit[1]));
         }
         List<Merchant> merchantList = mongoTemplate.find(query, Merchant.class);
         List<RegisterShopParam> result = new ArrayList<>(merchantList.size());
