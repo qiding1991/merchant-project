@@ -1,6 +1,7 @@
 package com.kankan.merchant.service.impl;
 
 import com.kankan.merchant.module.merchant.common.CommonAppraise;
+import com.kankan.merchant.module.merchant.common.CommonProduct;
 import com.kankan.merchant.module.param.AppraiseParam;
 import com.kankan.merchant.service.AppraiseService;
 import com.kankan.merchant.utils.DateUtils;
@@ -53,6 +54,20 @@ public class AppraiseServiceImpl implements AppraiseService {
                 update.inc("likeNum",-1);
             }
             mongoTemplate.upsert(query,update,CommonAppraise.class);
+        }
+    }
+
+    @Override
+    public void markLikeProduct(String productId,Integer type) {
+        Update update = new Update();
+        if (!StringUtils.isEmpty(productId)) {
+            Query query = Query.query(Criteria.where("_id").is(productId));
+            if (0 < type) {
+                update.inc("likeNum",1);
+            } else {
+                update.inc("likeNum",-1);
+            }
+            mongoTemplate.upsert(query,update, CommonProduct.class);
         }
     }
 }

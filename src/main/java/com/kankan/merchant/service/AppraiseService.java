@@ -12,4 +12,6 @@ public interface AppraiseService {
 
    void markLikeAppraise (String appraiseId,Integer type);
 
+   void markLikeProduct(String appraiseId,Integer type);
+
 }

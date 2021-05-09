@@ -5,6 +5,7 @@ import com.kankan.merchant.module.merchant.food.Pictures;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -23,7 +24,7 @@ public class CommonProduct {
     List<MenuAppraise> menuAppraiseList;
 
     @ApiModelProperty(value = "产品评价列表",notes = "")
-    List<CommonAppraise> appraiseList;
+    List<CommonAppraise> appraiseList = new ArrayList<>();
     @ApiModelProperty(value = "产品名称",notes = "")
     private String productName;//can to update
     @ApiModelProperty(value = "封面图片",notes = "")

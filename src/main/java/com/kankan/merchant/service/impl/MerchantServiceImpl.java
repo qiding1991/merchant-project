@@ -8,6 +8,8 @@ import com.kankan.merchant.common.MerchantConstant;
 import com.kankan.merchant.model.Address;
 import com.kankan.merchant.model.product.Product;
 import com.kankan.merchant.module.merchant.ApplyInfo;
+import com.kankan.merchant.module.merchant.common.CommonAppraise;
+import com.kankan.merchant.module.merchant.common.CommonProduct;
 import com.kankan.merchant.module.param.MerchantApplyParam;
 import com.kankan.merchant.module.param.MerchantQueryParam;
 import com.kankan.merchant.module.param.RegisterShopParam;
@@ -183,6 +185,20 @@ public class MerchantServiceImpl implements MerchantService {
     public RegisterShopParam findById(String shopId) {
         Query query = Query.query(Criteria.where("_id").is(shopId));
         return merchantToParam(mongoTemplate.findOne(query, Merchant.class));
+    }
+
+    @Override
+    public RegisterShopParam findByIdForClient(String shopId) {
+        Query query = Query.query(Criteria.where("_id").is(shopId));
+        RegisterShopParam result = merchantToParam(mongoTemplate.findOne(query, Merchant.class));
+        query = Query.query(Criteria.where("shopId").is(shopId));
+        List<CommonProduct> productList = mongoTemplate.find(query, CommonProduct.class);
+        for (CommonProduct product : productList) {
+            query = Query.query(Criteria.where("productId").is(product.getId()));
+            product.setAppraiseList(mongoTemplate.find(query, CommonAppraise.class));
+        }
+        result.setClientProductList(productList);
+        return result;
     }
 
     @Override

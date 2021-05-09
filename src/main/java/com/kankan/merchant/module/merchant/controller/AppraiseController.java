@@ -42,4 +42,13 @@ public class AppraiseController {
         appraiseService.markLikeAppraise(appraiseId,type);
         return CommonResponse.success();
     }
+
+    @ApiOperation(value = "客户端产品点赞服务")
+    @ApiImplicitParams({@ApiImplicitParam(name = "productId", value = "产品ID", required = true, paramType = "query", dataType = "String"),
+            @ApiImplicitParam(name = "type", value = "1点赞0取消点赞", required = true, paramType = "query", dataType = "Integer")})
+    @PutMapping
+    public CommonResponse markLikeProduct (String productId,Integer type) {
+        appraiseService.markLikeProduct(productId,type);
+        return CommonResponse.success();
+    }
 }
