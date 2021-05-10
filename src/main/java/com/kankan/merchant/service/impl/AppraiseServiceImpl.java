@@ -1,10 +1,12 @@
 package com.kankan.merchant.service.impl;
 
+import com.google.gson.Gson;
 import com.kankan.merchant.module.merchant.common.CommonAppraise;
 import com.kankan.merchant.module.merchant.common.CommonProduct;
 import com.kankan.merchant.module.param.AppraiseParam;
 import com.kankan.merchant.service.AppraiseService;
 import com.kankan.merchant.utils.DateUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -15,19 +17,23 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 @Service
+@Slf4j
 public class AppraiseServiceImpl implements AppraiseService {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+    private Gson gson = new Gson();
 
     @Override
     public CommonAppraise userAppraise(CommonAppraise commonAppraise) {
         commonAppraise.setTime(DateUtils.getCurDateTime());
+        log.info("add appraise input param ========>>{}",gson.toJson(commonAppraise));
         return mongoTemplate.insert(commonAppraise);
     }
 
     @Override
     public List<CommonAppraise> appraiseList(AppraiseParam commonAppraise) {
+        log.info("get appraise input param ========>>{}",gson.toJson(commonAppraise));
         Query query = new Query();
         if ("1".equals(commonAppraise.getType())) {
             query.addCriteria(Criteria.where("shopId").is(commonAppraise.getShopId()));

@@ -134,7 +134,9 @@ public class MerchantServiceImpl implements MerchantService {
         if (null != merchant.getApplyInfo()) {
             registerShopParam.setCompanyName(merchant.getApplyInfo().getCompanyName());
             registerShopParam.setFile(merchant.getApplyInfo().getIDUrl());
-            registerShopParam.setSourceFrom(merchant.getApplyInfo().getYelp()?0:1);
+            if (null != merchant.getApplyInfo().getYelp()) {
+                registerShopParam.setSourceFrom(merchant.getApplyInfo().getYelp()?0:1);
+            }
             registerShopParam.setShopPicture(merchant.getApplyInfo().getPhotos());
             registerShopParam.setApplyStatus(merchant.getApplyInfo().getApplyStatus());
             registerShopParam.setFile(merchant.getApplyInfo().getIDUrl());
