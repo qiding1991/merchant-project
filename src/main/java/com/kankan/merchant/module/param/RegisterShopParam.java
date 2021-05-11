@@ -49,8 +49,8 @@ public class RegisterShopParam {
   private String hot;
   private Integer applyStatus = 1;
   private Integer status;
-  private Long registerTime;
-  private Long updateTime;
+  private String registerTime;
+  private String updateTime;
   private List<Product> productList = new ArrayList<>();
   private List<CommonProduct> clientProductList = new ArrayList<>();
 

@@ -14,6 +14,7 @@ import com.kankan.merchant.module.param.MerchantApplyParam;
 import com.kankan.merchant.module.param.MerchantQueryParam;
 import com.kankan.merchant.module.param.RegisterShopParam;
 import com.kankan.merchant.service.UserPrivilegeService;
+import com.kankan.merchant.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.Point;
@@ -41,7 +42,7 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public RegisterShopParam registerMerchant(RegisterShopParam registerShopParam) {
         Merchant merchant = paramToMerchant(registerShopParam);
-        merchant.setRegisterTime(System.currentTimeMillis());
+        merchant.setRegisterTime(DateUtils.getCurDateTime());
         merchant = mongoTemplate.insert(merchant);
         return new RegisterShopParam(merchant.getId(),merchant.getApplyInfo().getApplyStatus());
     }
@@ -139,7 +140,6 @@ public class MerchantServiceImpl implements MerchantService {
             }
             registerShopParam.setShopPicture(merchant.getApplyInfo().getPhotos());
             registerShopParam.setApplyStatus(merchant.getApplyInfo().getApplyStatus());
-            registerShopParam.setFile(merchant.getApplyInfo().getIDUrl());
         }
         registerShopParam.setWholeScore(merchant.getWholeScore());
         registerShopParam.setEnvScore(merchant.getEnvScore());
@@ -175,9 +175,35 @@ public class MerchantServiceImpl implements MerchantService {
 
     private Update buildUpdate(RegisterShopParam param) {
         Update update = new Update();
-        if (!StringUtils.isEmpty(param.getHot())) {
+        update = !StringUtils.isEmpty(param.getUserId())?update.set("userId",param.getUserId()):update;
+        update = !StringUtils.isEmpty(param.getShopName())?update.set("shopName",param.getShopName()):update;
+        update = !StringUtils.isEmpty(param.getCompanyName())?update.set("applyInfo.$.companyName",param.getCompanyName()):update;
+        update = !StringUtils.isEmpty(param.getFile())?update.set("applyInfo.$.IDUrl",param.getFile()):update;
+        update = !StringUtils.isEmpty(param.getShopPicture())?update.set("applyInfo.$.photos",param.getShopPicture()):update;
+        update = !StringUtils.isEmpty(param.getSourceFrom())?update.set("applyInfo.$.yelp",param.getSourceFrom()):update;
+        update = !StringUtils.isEmpty(param.getCategory1())?update.set("category1",param.getCategory1()):update;
+        update = !StringUtils.isEmpty(param.getCategory2())?update.set("category2",param.getCategory2()):update;
+        update = !StringUtils.isEmpty(param.getRegion())?update.set("address.$.region",param.getRegion()):update;
+        update = !StringUtils.isEmpty(param.getAddress())?update.set("address.$.name",param.getAddress()):update;
+        update = !StringUtils.isEmpty(param.getLocation())?update.set("address.$.lang",Double.parseDouble(param.getLocation().split(";")[0])):update;
+        update = !StringUtils.isEmpty(param.getLocation())?update.set("address.$.lat",Double.parseDouble(param.getLocation().split(";")[1])):update;
+        update = !StringUtils.isEmpty(param.getContact())?update.set("phone",param.getContact()):update;
+        update = !StringUtils.isEmpty(param.getFaxNo())?update.set("faxNo",param.getFaxNo()):update;
+        update = !StringUtils.isEmpty(param.getServiceTime())?update.set("serviceTime",param.getServiceTime()):update;
+        update = !StringUtils.isEmpty(param.getEmail())?update.set("email",param.getEmail()):update;
+        update = !StringUtils.isEmpty(param.getWebsite())?update.set("website",param.getWebsite()):update;
+        update = !StringUtils.isEmpty(param.getWelChat())?update.set("wx",param.getWelChat()):update;
+        update = !StringUtils.isEmpty(param.getPayType())?update.set("paymentType",param.getPayType()):update;
+        update = !StringUtils.isEmpty(param.getAveragePrice())?update.set("averagePrice",param.getAveragePrice()):update;
+        update = !StringUtils.isEmpty(param.getWholeScore())?update.set("wholeScore",param.getWholeScore()):update;
+        update = !StringUtils.isEmpty(param.getEnvScore())?update.set("envScore",param.getEnvScore()):update;
+        update = !StringUtils.isEmpty(param.getFlavorScore())?update.set("flavorScore",param.getFlavorScore()):update;
+        update = !StringUtils.isEmpty(param.getServiceScore())?update.set("serviceScore",param.getServiceScore()):update;
+        update = !StringUtils.isEmpty(param.getHot())?update.set("hot",param.getHot()):update;
+        /*if (!StringUtils.isEmpty(param.getHot())) {
             update.set("hot",param.getHot());
-        }
+        }*/
+        update.set("updateTime",DateUtils.getCurDateTime());
         return update;
     }
 

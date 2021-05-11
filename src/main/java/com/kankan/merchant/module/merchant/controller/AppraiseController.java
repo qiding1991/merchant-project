@@ -23,7 +23,7 @@ public class AppraiseController {
 
     @ApiOperation(value = "客户端添加用户评价服务")
     @PostMapping
-    public CommonResponse userAppraise (CommonAppraise commonAppraise) {
+    public CommonResponse userAppraise (@RequestBody CommonAppraise commonAppraise) {
         appraiseService.userAppraise(commonAppraise);
         return CommonResponse.success();
     }
