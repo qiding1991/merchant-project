@@ -68,7 +68,7 @@ public class MerchantController {
 
   @ApiOperation(value = "管理后台修改商家信息")
   @RequestMapping(value = "/updateShop", method = RequestMethod.PUT)
-  public CommonResponse updateShop(RegisterShopParam registerShopParam) {
+  public CommonResponse updateShop(@RequestBody RegisterShopParam registerShopParam) {
     if (null == registerShopParam || StringUtils.isEmpty(registerShopParam.getId())) {
       return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
     }
