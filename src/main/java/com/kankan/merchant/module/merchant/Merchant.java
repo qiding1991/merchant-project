@@ -5,6 +5,7 @@ package com.kankan.merchant.module.merchant;
 import com.kankan.merchant.model.Address;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
@@ -19,8 +20,8 @@ public class Merchant {
   private String category2;
   private String name; //商铺名称
   private Address address;
-  @GeoSpatialIndexed
-  private List<Double> location;
+  @GeoSpatialIndexed(name = "location")
+  private Point location;
   private List<Integer> paymentType;//支付方式
   private String phone;
   private String email;
@@ -30,11 +31,11 @@ public class Merchant {
   private String serviceTime;
   private String hot;
   private ApplyInfo applyInfo = new ApplyInfo();
-  private String averagePrice;
-  private String wholeScore;
-  private String envScore;
-  private String flavorScore;
-  private String serviceScore;
+  private Integer averagePrice;
+  private Double wholeScore;
+  private Double envScore;
+  private Double flavorScore;
+  private Double serviceScore;
   private List<Appraise> appraiseList;
   private Integer thumpCount;
   private String registerTime;

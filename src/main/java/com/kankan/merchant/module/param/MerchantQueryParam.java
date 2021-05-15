@@ -8,7 +8,7 @@ public class MerchantQueryParam {
     private String category1;
     private String category2;
 
-    private int areaCode;
+    private String areaCode;
 
     private int intelligentType;
     private String location;

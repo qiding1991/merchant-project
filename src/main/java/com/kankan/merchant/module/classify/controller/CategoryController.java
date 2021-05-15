@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*")
@@ -43,8 +44,8 @@ public class CategoryController {
 
   @ApiOperation("更新分类")
   @PutMapping(value = "update")
-  public CommonResponse updateCategory(CategoryParam categoryParam) {
-    if (null == categoryParam) {
+  public CommonResponse updateCategory(@RequestBody CategoryParam categoryParam) {
+    if (null == categoryParam || StringUtils.isEmpty(categoryParam.getId())) {
       return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
     }
     categoryService.updateCategory(categoryParam);

@@ -76,17 +76,18 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public void updateCategory(CategoryParam categoryParam) {
-      /*Query query = Query.query(Criteria.where("_id").is(categoryParam.getId()));
+      Query query = Query.query(Criteria.where("_id").is(categoryParam.getId()));
       Update update = new Update();
       if (!StringUtils.isEmpty(categoryParam.getName())) {
         update.set("name", categoryParam.getName());
       }
       if (!StringUtils.isEmpty(categoryParam.getName())) {
         update.set("icon", categoryParam.getIcon());
-      }*/
-    Category category = new Category();
-    BeanUtils.copyProperties(categoryParam,category);
-      mongoTemplate.save(category);
+      }
+      if (!StringUtils.isEmpty(categoryParam.getIsMenu())) {
+        update.set("isMenu", categoryParam.getIsMenu());
+      }
+      mongoTemplate.upsert(query,update,Category.class);
   }
 
   public void addMerchantItemClassify(String classifyId, List<ItemClassify> itemClassify) {

@@ -1,7 +1,6 @@
 package com.kankan.merchant.service.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.kankan.merchant.common.MerchantConstant;
@@ -75,9 +74,8 @@ public class MerchantServiceImpl implements MerchantService {
             address.setLang(Double.parseDouble(registerShopParam.getLocation().split(";")[0]));
             address.setLat(Double.parseDouble(registerShopParam.getLocation().split(";")[1]));
             List<Double> locationData = new ArrayList<>(2);
-            locationData.add(address.getLang());
-            locationData.add(address.getLat());
-            merchant.setLocation(locationData);
+            Point point = new Point(address.getLang(), address.getLat());
+            merchant.setLocation(point);
         }
         merchant.setAddress(address);
         ApplyInfo applyInfo = new ApplyInfo();
@@ -87,13 +85,13 @@ public class MerchantServiceImpl implements MerchantService {
         if (!CollectionUtils.isEmpty(registerShopParam.getShopPicture())) {
             applyInfo.setPhotos(registerShopParam.getShopPicture());
         }
-        applyInfo.setYelp(MerchantConstant.merchant_source_yelp == registerShopParam.getSourceFrom());
+        applyInfo.setYelp(registerShopParam.getSourceFrom()==1);
         applyInfo.setApplyStatus(MerchantConstant.merchant_wait_apply);
         merchant.setAveragePrice(registerShopParam.getAveragePrice());
-        merchant.setWholeScore(registerShopParam.getWholeScore());
-        merchant.setEnvScore(registerShopParam.getEnvScore());
-        merchant.setFlavorScore(registerShopParam.getFlavorScore());
-        merchant.setServiceScore(registerShopParam.getServiceScore());
+        merchant.setWholeScore(Double.parseDouble(registerShopParam.getWholeScore()));
+        merchant.setEnvScore(Double.parseDouble(registerShopParam.getEnvScore()));
+        merchant.setFlavorScore(Double.parseDouble(registerShopParam.getFlavorScore()));
+        merchant.setServiceScore(Double.parseDouble(registerShopParam.getServiceScore()));
         merchant.setApplyInfo(applyInfo);
         merchant.setEmail(registerShopParam.getEmail());
         merchant.setPhone(registerShopParam.getContact());
@@ -106,6 +104,7 @@ public class MerchantServiceImpl implements MerchantService {
         merchant.setUpdateTime(registerShopParam.getUpdateTime());
         merchant.setHot(registerShopParam.getHot());
         merchant.getApplyInfo().setCompanyName(registerShopParam.getCompanyName());
+        merchant.getAddress().setArea(registerShopParam.getRegion());
         return merchant;
     }
 
@@ -136,21 +135,22 @@ public class MerchantServiceImpl implements MerchantService {
             registerShopParam.setCompanyName(merchant.getApplyInfo().getCompanyName());
             registerShopParam.setFile(merchant.getApplyInfo().getIDUrl());
             if (null != merchant.getApplyInfo().getYelp()) {
-                registerShopParam.setSourceFrom(merchant.getApplyInfo().getYelp()?0:1);
+                registerShopParam.setSourceFrom(merchant.getApplyInfo().getYelp()?1:0);
             }
             registerShopParam.setShopPicture(merchant.getApplyInfo().getPhotos());
             registerShopParam.setApplyStatus(merchant.getApplyInfo().getApplyStatus());
         }
-        registerShopParam.setWholeScore(merchant.getWholeScore());
-        registerShopParam.setEnvScore(merchant.getEnvScore());
-        registerShopParam.setFlavorScore(merchant.getFlavorScore());
-        registerShopParam.setServiceScore(merchant.getServiceScore());
+        registerShopParam.setWholeScore(String.valueOf(merchant.getWholeScore()));
+        registerShopParam.setEnvScore(String.valueOf(merchant.getEnvScore()));
+        registerShopParam.setFlavorScore(String.valueOf(merchant.getFlavorScore()));
+        registerShopParam.setServiceScore(String.valueOf(merchant.getServiceScore()));
         if (null != merchant.getHot()) {
             registerShopParam.setHot(merchant.getHot());
         }
         registerShopParam.setRegisterTime(merchant.getRegisterTime());
         registerShopParam.setUpdateTime(merchant.getUpdateTime());
         registerShopParam.setUserId(merchant.getUserId());
+        registerShopParam.setRegion(merchant.getAddress().getArea());
         return registerShopParam;
     }
 
@@ -170,7 +170,8 @@ public class MerchantServiceImpl implements MerchantService {
     public void updateMerchant(RegisterShopParam registerShopParam) {
         //mongoTemplate.save(paramToMerchant(registerShopParam));
         Query query = Query.query(Criteria.where("_id").is(registerShopParam.getId()));
-        mongoTemplate.upsert(query,buildUpdate(registerShopParam),Merchant.class);
+        Update update = buildUpdate(registerShopParam);
+        mongoTemplate.upsert(query,update,Merchant.class);
     }
 
     private Update buildUpdate(RegisterShopParam param) {
@@ -194,15 +195,12 @@ public class MerchantServiceImpl implements MerchantService {
         update = !StringUtils.isEmpty(param.getWebsite())?update.set("website",param.getWebsite()):update;
         update = !StringUtils.isEmpty(param.getWelChat())?update.set("wx",param.getWelChat()):update;
         update = !StringUtils.isEmpty(param.getPayType())?update.set("paymentType",param.getPayType()):update;
-        update = !StringUtils.isEmpty(param.getAveragePrice())?update.set("averagePrice",param.getAveragePrice()):update;
+        update = !StringUtils.isEmpty(param.getAveragePrice())?update.set("averagePrice",String.valueOf(param.getAveragePrice())):update;
         update = !StringUtils.isEmpty(param.getWholeScore())?update.set("wholeScore",param.getWholeScore()):update;
         update = !StringUtils.isEmpty(param.getEnvScore())?update.set("envScore",param.getEnvScore()):update;
         update = !StringUtils.isEmpty(param.getFlavorScore())?update.set("flavorScore",param.getFlavorScore()):update;
         update = !StringUtils.isEmpty(param.getServiceScore())?update.set("serviceScore",param.getServiceScore()):update;
         update = !StringUtils.isEmpty(param.getHot())?update.set("hot",param.getHot()):update;
-        /*if (!StringUtils.isEmpty(param.getHot())) {
-            update.set("hot",param.getHot());
-        }*/
         update.set("updateTime",DateUtils.getCurDateTime());
         return update;
     }
@@ -306,7 +304,7 @@ public class MerchantServiceImpl implements MerchantService {
         if (!StringUtils.isEmpty(registerShopParam.getLocation())) {
             String [] locationArray = registerShopParam.getLocation().split(";");
             Point point = new Point(Double.parseDouble(locationArray[0]),Double.parseDouble(locationArray[1]));
-            query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000.00));
+            query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000));
             merchantList = mongoTemplate.find(query, Merchant.class);
         }
         if (!CollectionUtils.isEmpty(merchantList)) {
@@ -323,14 +321,14 @@ public class MerchantServiceImpl implements MerchantService {
         if (null != merchantQueryParam.getCategory2()) {
             query.addCriteria(Criteria.where("category2").is(merchantQueryParam.getCategory2()));
         }
-        if (merchantQueryParam.getAreaCode() > 0) {
+        if (!StringUtils.isEmpty(merchantQueryParam.getAreaCode())) {
             query.addCriteria(Criteria.where("address.$.area").is(merchantQueryParam.getAreaCode()));
         }
         if (merchantQueryParam.getIntelligentType() > 0) {
             if (1 == merchantQueryParam.getIntelligentType() && null != merchantQueryParam.getLocation()) {
                 String [] locationArray = merchantQueryParam.getLocation().split(";");
                 Point point = new Point(Double.parseDouble(locationArray[0]),Double.parseDouble(locationArray[1]));
-                query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000.00));query.addCriteria(Criteria.where("location").is(merchantQueryParam.getLocation()));
+                query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5.00));
             }
             if (2 == merchantQueryParam.getIntelligentType()) {
                 query.with(Sort.by(Sort.Order.desc("wholeScore")));
@@ -362,13 +360,13 @@ public class MerchantServiceImpl implements MerchantService {
                     query.addCriteria(Criteria.where("averagePrice").lt(10));
                     break;
                 case 2:
-                    query.addCriteria(Criteria.where("averagePrice").lt(30));
+                    query.addCriteria(Criteria.where("averagePrice").gte(10).lt(30));
                     break;
                 case 3:
-                    query.addCriteria(Criteria.where("averagePrice").lt(60));
+                    query.addCriteria(Criteria.where("averagePrice").gte(30).lt(60));
                     break;
                 case 4:
-                    query.addCriteria(Criteria.where("averagePrice").gt(60));
+                    query.addCriteria(Criteria.where("averagePrice").gte(60));
                     break;
             }
         }
@@ -377,8 +375,7 @@ public class MerchantServiceImpl implements MerchantService {
         }
         if (!StringUtils.isEmpty(merchantQueryParam.getWholeScore())) {
             String [] scoreLimit = merchantQueryParam.getWholeScore().split(",");
-            query.addCriteria(Criteria.where("wholeScore").gt(scoreLimit[0]));
-            query.addCriteria(Criteria.where("wholeScore").lt(scoreLimit[1]));
+            query.addCriteria(Criteria.where("wholeScore").gte(Double.parseDouble(scoreLimit[0])).lte(Double.parseDouble(scoreLimit[1])));
         }
         List<Merchant> merchantList = mongoTemplate.find(query, Merchant.class);
         List<RegisterShopParam> result = new ArrayList<>(merchantList.size());

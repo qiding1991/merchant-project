@@ -38,9 +38,9 @@ public class RegisterShopParam {
   private String website;
   private String welChat;
   private List<Integer> payType;
-  private String averagePrice;
+  private Integer averagePrice;
   private String file;
-  private int sourceFrom;
+  private Integer sourceFrom;
   private List<String> shopPicture;
   private String wholeScore;
   private String envScore;
