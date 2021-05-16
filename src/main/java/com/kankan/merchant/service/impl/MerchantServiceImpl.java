@@ -88,10 +88,18 @@ public class MerchantServiceImpl implements MerchantService {
         applyInfo.setYelp(registerShopParam.getSourceFrom()==1);
         applyInfo.setApplyStatus(MerchantConstant.merchant_wait_apply);
         merchant.setAveragePrice(registerShopParam.getAveragePrice());
-        merchant.setWholeScore(Double.parseDouble(registerShopParam.getWholeScore()));
-        merchant.setEnvScore(Double.parseDouble(registerShopParam.getEnvScore()));
-        merchant.setFlavorScore(Double.parseDouble(registerShopParam.getFlavorScore()));
-        merchant.setServiceScore(Double.parseDouble(registerShopParam.getServiceScore()));
+        if (!StringUtils.isEmpty(registerShopParam.getWholeScore())) {
+            merchant.setWholeScore(Double.parseDouble(registerShopParam.getWholeScore()));
+        }
+        if (!StringUtils.isEmpty(registerShopParam.getEnvScore())) {
+            merchant.setEnvScore(Double.parseDouble(registerShopParam.getEnvScore()));
+        }
+        if (!StringUtils.isEmpty(registerShopParam.getFlavorScore())) {
+            merchant.setFlavorScore(Double.parseDouble(registerShopParam.getFlavorScore()));
+        }
+        if (!StringUtils.isEmpty(registerShopParam.getServiceScore())) {
+            merchant.setServiceScore(Double.parseDouble(registerShopParam.getServiceScore()));
+        }
         merchant.setApplyInfo(applyInfo);
         merchant.setEmail(registerShopParam.getEmail());
         merchant.setPhone(registerShopParam.getContact());
