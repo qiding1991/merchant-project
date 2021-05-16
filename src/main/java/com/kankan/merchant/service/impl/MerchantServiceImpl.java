@@ -329,7 +329,7 @@ public class MerchantServiceImpl implements MerchantService {
         if (null != merchantQueryParam.getCategory2()) {
             query.addCriteria(Criteria.where("category2").is(merchantQueryParam.getCategory2()));
         }
-        if (!StringUtils.isEmpty(merchantQueryParam.getAreaCode())) {
+        if (!StringUtils.isEmpty(merchantQueryParam.getAreaCode()) && !"0".equals(merchantQueryParam.getAreaCode())) {
             query.addCriteria(Criteria.where("address.$.area").is(merchantQueryParam.getAreaCode()));
         }
         if (merchantQueryParam.getIntelligentType() > 0) {
