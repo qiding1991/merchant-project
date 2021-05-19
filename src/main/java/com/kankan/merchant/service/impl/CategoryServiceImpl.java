@@ -4,7 +4,9 @@ import com.kankan.merchant.module.classify.model.ItemClassify;
 import com.kankan.merchant.module.classify.model.Category;
 import com.kankan.merchant.module.classify.param.CategoryParam;
 import com.kankan.merchant.service.CategoryService;
+import com.kankan.merchant.utils.LogUtil;
 import com.mongodb.client.result.UpdateResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -18,6 +20,7 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 
 @Service
+@Slf4j
 public class CategoryServiceImpl implements CategoryService {
 
   private final MongoTemplate mongoTemplate;
@@ -28,6 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public Category addCategory(Category category) {
+    LogUtil.printLog(log,"addCategory",category);
     if (StringUtils.isEmpty(category.getId())) {
       category.setId(UUID.randomUUID().toString());
     }
@@ -36,6 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public List<Category> findAllCategory(String parentId) {
+    LogUtil.printLog(log,"findAllCategory",parentId);
     if (null != parentId) {
       Query query = Query.query(Criteria.where("parentId").is(parentId));
       return mongoTemplate.find(query,Category.class);
@@ -63,6 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
   @Override
   @Transactional(rollbackFor = Exception.class)
   public void delCategory(String categoryId) {
+    LogUtil.printLog(log,"delCategory",categoryId);
     Query query = Query.query(Criteria.where("_id").is(categoryId));
     Category category = mongoTemplate.findOne(query,Category.class);
     if (null != category && null != category.getParentId()) {
@@ -76,6 +82,7 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public void updateCategory(CategoryParam categoryParam) {
+      LogUtil.printLog(log,"updateCategory",categoryParam);
       Query query = Query.query(Criteria.where("_id").is(categoryParam.getId()));
       Update update = new Update();
       if (!StringUtils.isEmpty(categoryParam.getName())) {
@@ -109,6 +116,7 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public void delMerchantClassifyItem(String classifyItemId) {
+    LogUtil.printLog(log,"delMerchantClassifyItem",classifyItemId);
     Query query = Query.query(Criteria.where("itemTypeList.id").is(classifyItemId));
     Category merchantClassify = mongoTemplate.findOne(query, Category.class);
 

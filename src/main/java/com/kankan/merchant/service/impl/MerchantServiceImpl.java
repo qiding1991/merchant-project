@@ -9,11 +9,17 @@ import com.kankan.merchant.model.product.Product;
 import com.kankan.merchant.module.merchant.ApplyInfo;
 import com.kankan.merchant.module.merchant.common.CommonAppraise;
 import com.kankan.merchant.module.merchant.common.CommonProduct;
+import com.kankan.merchant.module.param.CollectLikeParam;
 import com.kankan.merchant.module.param.MerchantApplyParam;
 import com.kankan.merchant.module.param.MerchantQueryParam;
 import com.kankan.merchant.module.param.RegisterShopParam;
 import com.kankan.merchant.service.UserPrivilegeService;
 import com.kankan.merchant.utils.DateUtils;
+import com.kankan.merchant.utils.LogUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.gavaghan.geodesy.Ellipsoid;
+import org.gavaghan.geodesy.GeodeticCalculator;
+import org.gavaghan.geodesy.GlobalCoordinates;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.Point;
@@ -32,6 +38,7 @@ import org.springframework.util.StringUtils;
 
 
 @Service
+@Slf4j
 public class MerchantServiceImpl implements MerchantService {
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -40,6 +47,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public RegisterShopParam registerMerchant(RegisterShopParam registerShopParam) {
+        LogUtil.printLog(log,"registerMerchant",registerShopParam);
         Merchant merchant = paramToMerchant(registerShopParam);
         merchant.setRegisterTime(DateUtils.getCurDateTime());
         merchant = mongoTemplate.insert(merchant);
@@ -49,6 +57,7 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void applyMerchant(MerchantApplyParam merchantApplyParam) {
+        LogUtil.printLog(log,"applyMerchant",merchantApplyParam);
         Query query = Query.query(Criteria.where("_id").is(merchantApplyParam.getApplyId()));
         Update update = new Update();
         if (!StringUtils.isEmpty(merchantApplyParam.getNewStatus())) {
@@ -116,7 +125,7 @@ public class MerchantServiceImpl implements MerchantService {
         return merchant;
     }
 
-    private RegisterShopParam merchantToParam (Merchant merchant) {
+    private RegisterShopParam merchantToParam (Merchant merchant,String userLocation) {
         RegisterShopParam registerShopParam = new RegisterShopParam();
         if (null == merchant) {
             return registerShopParam;
@@ -159,24 +168,38 @@ public class MerchantServiceImpl implements MerchantService {
         registerShopParam.setUpdateTime(merchant.getUpdateTime());
         registerShopParam.setUserId(merchant.getUserId());
         registerShopParam.setRegion(merchant.getAddress().getArea());
+        if (!StringUtils.isEmpty(userLocation)) {
+            Point point = merchant.getLocation();
+            registerShopParam.setDistance(String.valueOf(getDistance(point,registerShopParam.getUserLocation())));
+        }
+        registerShopParam.setCollectUsers(merchant.getCollectUsers());
         return registerShopParam;
+    }
+
+    private double getDistance(Point fromLocation,String toLocation) {
+        GlobalCoordinates from = new GlobalCoordinates(fromLocation.getX(),fromLocation.getY());
+        String [] toLocationData = toLocation.split(";");
+        GlobalCoordinates to = new GlobalCoordinates(Double.parseDouble(toLocationData[0]),Double.parseDouble(toLocationData[1]));
+        return new GeodeticCalculator().calculateGeodeticCurve(Ellipsoid.Sphere,from,to).getEllipsoidalDistance();
     }
 
     @Override
     public List<Merchant> findShop(String classifyId) {
+        LogUtil.printLog(log,"findShop",classifyId);
         Query query = Query.query(Criteria.where("classifyId").is(classifyId));
         return mongoTemplate.find(query, Merchant.class);
     }
 
     @Override
     public List<Merchant> findShopBySecond(String secondClassifyId) {
+        LogUtil.printLog(log,"findShopBySecond",secondClassifyId);
         Query query = Query.query(Criteria.where("itemId").is(secondClassifyId));
         return mongoTemplate.find(query, Merchant.class);
     }
 
     @Override
     public void updateMerchant(RegisterShopParam registerShopParam) {
-        //mongoTemplate.save(paramToMerchant(registerShopParam));
+        LogUtil.printLog(log,"updateMerchant",registerShopParam);
         Query query = Query.query(Criteria.where("_id").is(registerShopParam.getId()));
         Update update = buildUpdate(registerShopParam);
         mongoTemplate.upsert(query,update,Merchant.class);
@@ -215,20 +238,23 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public void delMerchant(String shopId) {
+        LogUtil.printLog(log,"delMerchant",shopId);
         Query query = Query.query(Criteria.where("_id").is(shopId));
         mongoTemplate.remove(query, Merchant.class);
     }
 
     @Override
     public RegisterShopParam findById(String shopId) {
+        LogUtil.printLog(log,"findById",shopId);
         Query query = Query.query(Criteria.where("_id").is(shopId));
-        return merchantToParam(mongoTemplate.findOne(query, Merchant.class));
+        return merchantToParam(mongoTemplate.findOne(query, Merchant.class),null);
     }
 
     @Override
     public RegisterShopParam findByIdForClient(String shopId) {
+        LogUtil.printLog(log,"findByIdForClient",shopId);
         Query query = Query.query(Criteria.where("_id").is(shopId));
-        RegisterShopParam result = merchantToParam(mongoTemplate.findOne(query, Merchant.class));
+        RegisterShopParam result = merchantToParam(mongoTemplate.findOne(query, Merchant.class),null);
         query = Query.query(Criteria.where("shopId").is(shopId));
         List<CommonProduct> productList = mongoTemplate.find(query, CommonProduct.class);
         for (CommonProduct product : productList) {
@@ -243,7 +269,7 @@ public class MerchantServiceImpl implements MerchantService {
     public List<RegisterShopParam> findShopList() {
         List<Merchant> list = mongoTemplate.findAll(Merchant.class);
         return list.stream().map(item -> {
-            return merchantToParam(item);
+            return merchantToParam(item,null);
         }).collect(Collectors.toList());
     }
 
@@ -255,6 +281,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public List<Merchant> findHotShop(String classifyId) {
+        LogUtil.printLog(log,"findHotShop",classifyId);
         Query query = Query.query(Criteria.where("classifyId").is(classifyId));
         return mongoTemplate.find(query, Merchant.class);
     }
@@ -296,6 +323,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public List<RegisterShopParam> firstPageMerchant(RegisterShopParam registerShopParam) {
+        LogUtil.printLog(log,"firstPageMerchant",registerShopParam);
         Query query = new Query();
         if (!StringUtils.isEmpty(registerShopParam.getCategory1()) && !"0".equals(registerShopParam.getCategory1())) {
             query.addCriteria(Criteria.where("category1").is(registerShopParam.getCategory1()));
@@ -317,7 +345,7 @@ public class MerchantServiceImpl implements MerchantService {
         }
         if (!CollectionUtils.isEmpty(merchantList)) {
             for (Merchant merchant : merchantList) {
-                result.add(merchantToParam(merchant));
+                result.add(merchantToParam(merchant,registerShopParam.getUserLocation()));
             }
         }
         return result;
@@ -325,6 +353,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public List<RegisterShopParam> chooseShop (MerchantQueryParam merchantQueryParam) {
+        LogUtil.printLog(log,"chooseShop",merchantQueryParam);
         Query query = new Query();
         if (null != merchantQueryParam.getCategory2()) {
             query.addCriteria(Criteria.where("category2").is(merchantQueryParam.getCategory2()));
@@ -389,7 +418,7 @@ public class MerchantServiceImpl implements MerchantService {
         List<RegisterShopParam> result = new ArrayList<>(merchantList.size());
         if (!CollectionUtils.isEmpty(merchantList)) {
             for (Merchant merchant : merchantList) {
-                result.add(merchantToParam(merchant));
+                result.add(merchantToParam(merchant,merchantQueryParam.getUserLocation()));
             }
         }
         return result;
@@ -397,9 +426,10 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public RegisterShopParam findShopByUserId(String userId) {
+        LogUtil.printLog(log,"findShopByUserId",userId);
         Query query = Query.query(Criteria.where("userId").is(userId));
         Merchant merchant = mongoTemplate.findOne(query, Merchant.class);
-        return merchantToParam(merchant);
+        return merchantToParam(merchant,null);
     }
 
     @Override
@@ -410,12 +440,37 @@ public class MerchantServiceImpl implements MerchantService {
         }
         List<RegisterShopParam> result = new ArrayList<>(merchantList.size());
         for (Merchant merchant : merchantList) {
-            RegisterShopParam registerShopParam = merchantToParam(merchant);
+            RegisterShopParam registerShopParam = merchantToParam(merchant,null);
             Query query = Query.query(Criteria.where("shopId").is(registerShopParam.getId()));
             List<Product> productList = mongoTemplate.find(query, Product.class);
             registerShopParam.setProductList(productList);
             result.add(registerShopParam);
         }
         return result;
+    }
+
+    @Override
+    public void shopCollect(CollectLikeParam param) {
+        LogUtil.printLog(log,"shopCollect",param);
+        Query query = Query.query(Criteria.where("_id").is(param.getTargetId()));
+        Merchant shop = mongoTemplate.findOne(query,Merchant.class);
+        if (null == shop) {
+            return;
+        }
+        List<Integer> collectUsers = shop.getCollectUsers();
+        if (CollectionUtils.isEmpty(collectUsers)) {
+            if (2 == param.getType()) {
+                collectUsers = new ArrayList<>(1);
+                collectUsers.add(param.getUserId());
+            }
+        } else {
+            if (2 == param.getType()) {
+                collectUsers.add(param.getUserId());
+            } else if (1 == param.getType()) {
+                collectUsers.remove(param.getUserId());
+            }
+        }
+        shop.setCollectUsers(collectUsers);
+        mongoTemplate.save(shop);
     }
 }

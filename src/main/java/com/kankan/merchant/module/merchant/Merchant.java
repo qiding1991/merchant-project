@@ -38,6 +38,7 @@ public class Merchant {
   private Double serviceScore;
   private List<Appraise> appraiseList;
   private Integer thumpCount;
+  private List<Integer> collectUsers;
   private String registerTime;
   private String updateTime;
 }

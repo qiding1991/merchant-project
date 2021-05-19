@@ -18,4 +18,6 @@ public class MerchantQueryParam {
     private int payType;
     private String wholeScore;
 
+    private String userLocation;
+
 }

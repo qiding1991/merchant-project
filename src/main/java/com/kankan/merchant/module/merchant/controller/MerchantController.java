@@ -47,7 +47,7 @@ public class MerchantController {
     return CommonResponse.success(merchantService.findShopList());
   }
 
-  @ApiOperation(value = "管理后台获取商家详情")
+  @ApiOperation(value = "获取商家详情")
   @RequestMapping(value = "/shopDetail", method = RequestMethod.GET)
   public CommonResponse applyShop(String shopId) {
     if (null == shopId) {

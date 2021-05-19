@@ -3,6 +3,7 @@ package com.kankan.merchant.service.impl;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.kankan.merchant.service.UserPrivilegeService;
+import com.kankan.merchant.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,8 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
 
   @Override
   public void addPrivilegeToUser(String userId, List<String> privilege) {
+    LogUtil.printLog(log,"addPrivilegeToUser userId",userId);
+    LogUtil.printLog(log,"addPrivilegeToUser privilege",privilege);
     String requestBody = new Gson().toJson(ImmutableMap.of("userId", userId, "privilege", privilege));
     MultiValueMap headers = new HttpHeaders();
     headers.add("Content-Type", MediaType.APPLICATION_JSON.toString());

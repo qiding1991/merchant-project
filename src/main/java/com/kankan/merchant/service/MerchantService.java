@@ -3,6 +3,7 @@ package com.kankan.merchant.service;
 import com.kankan.merchant.config.OrderRule;
 import com.kankan.merchant.config.PriceRange;
 import com.kankan.merchant.module.merchant.Merchant;
+import com.kankan.merchant.module.param.CollectLikeParam;
 import com.kankan.merchant.module.param.MerchantApplyParam;
 import com.kankan.merchant.module.param.MerchantQueryParam;
 import com.kankan.merchant.module.param.RegisterShopParam;
@@ -58,5 +59,7 @@ public interface MerchantService {
   List<RegisterShopParam> firstPageMerchant(RegisterShopParam registerShopParam);
 
   List<RegisterShopParam> chooseShop (MerchantQueryParam merchantQueryParam);
+
+  void shopCollect (CollectLikeParam collectLikeParam);
 
 }

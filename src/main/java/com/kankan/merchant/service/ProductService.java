@@ -1,7 +1,7 @@
 package com.kankan.merchant.service;
 
-import com.kankan.merchant.module.merchant.Product;
 import com.kankan.merchant.module.merchant.common.CommonProduct;
+import com.kankan.merchant.module.param.CollectLikeParam;
 import com.kankan.merchant.module.param.ProductUpdateParam;
 import java.util.List;
 
@@ -22,4 +22,8 @@ public interface ProductService {
   List<CommonProduct> findAllProduct (String shopId);
 
   List<CommonProduct> findAllProduct ();
+
+  void productCollect (CollectLikeParam param);
+
+  void productMarkLike (CollectLikeParam param);
 }

@@ -35,6 +35,8 @@ public class CommonProduct {
     private String saleTime;//can to update
     private Double price;//can to update
     private Boolean isCollection;//app
+    private List<Integer> collectUsers;//app
+    private List<Integer> likeUsers;//app
     private Integer likeNum;//app
     private String description;//can to update
     private String productPhone;

@@ -31,6 +31,7 @@ public class RegisterShopParam {
   private String region;
   private String address;
   private String location;
+  private String userLocation;
   private String contact;
   private String faxNo;
   private String serviceTime;
@@ -49,6 +50,8 @@ public class RegisterShopParam {
   private String hot;
   private Integer applyStatus = 1;
   private Integer status;
+  private String distance;
+  private List<Integer> collectUsers;
   private String registerTime;
   private String updateTime;
   private List<Product> productList = new ArrayList<>();
