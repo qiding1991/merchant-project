@@ -39,7 +39,7 @@ public class AppraiseServiceImpl implements AppraiseService {
         if ("1".equals(commonAppraise.getType())) {
             query.addCriteria(Criteria.where("shopId").is(commonAppraise.getShopId()));
         } else {
-            query.addCriteria(Criteria.where("productId").is(commonAppraise.getShopId()));
+            query.addCriteria(Criteria.where("productId").is(commonAppraise.getProductId()));
         }
         if (!StringUtils.isEmpty(commonAppraise.getHot())) {
             query.addCriteria(Criteria.where("hot").is(commonAppraise.getHot()));
