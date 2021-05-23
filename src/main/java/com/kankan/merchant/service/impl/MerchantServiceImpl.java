@@ -256,7 +256,7 @@ public class MerchantServiceImpl implements MerchantService {
         Query query = Query.query(Criteria.where("_id").is(shopId));
         RegisterShopParam result = merchantToParam(mongoTemplate.findOne(query, Merchant.class),null);
         result.setIsCollection(false);
-        if (CollectionUtils.isEmpty(result.getCollectUsers()) && result.getCollectUsers().contains(Integer.valueOf(userId))) {
+        if (!CollectionUtils.isEmpty(result.getCollectUsers()) && result.getCollectUsers().contains(Integer.valueOf(userId))) {
             result.setIsCollection(true);
         }
         query = Query.query(Criteria.where("shopId").is(shopId));
