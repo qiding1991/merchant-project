@@ -37,8 +37,8 @@ public class AppraiseController {
 
     @ApiOperation(value = "客户端评价点赞服务")
     @PutMapping
-    public CommonResponse markLikeAppraise (String appraiseId,Integer type,String userId) {
-        appraiseService.markLikeAppraise(appraiseId,type,userId);
+    public CommonResponse markLikeAppraise (@RequestBody CollectLikeParam collectLikeParam) {
+        appraiseService.markLikeAppraise(collectLikeParam.getTargetId(),collectLikeParam.getType(),String.valueOf(collectLikeParam.getUserId()));
         return CommonResponse.success();
     }
 
