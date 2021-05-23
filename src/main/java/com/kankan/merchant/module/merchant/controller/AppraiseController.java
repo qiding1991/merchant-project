@@ -3,6 +3,7 @@ package com.kankan.merchant.module.merchant.controller;
 import com.kankan.merchant.common.CommonResponse;
 import com.kankan.merchant.module.merchant.common.CommonAppraise;
 import com.kankan.merchant.module.param.AppraiseParam;
+import com.kankan.merchant.module.param.CollectLikeParam;
 import com.kankan.merchant.service.AppraiseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -35,8 +36,6 @@ public class AppraiseController {
     }
 
     @ApiOperation(value = "客户端评价点赞服务")
-    @ApiImplicitParams({@ApiImplicitParam(name = "appraiseId", value = "评论ID", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "type", value = "1点赞0取消点赞", required = true, paramType = "query", dataType = "Integer")})
     @PutMapping
     public CommonResponse markLikeAppraise (String appraiseId,Integer type,String userId) {
         appraiseService.markLikeAppraise(appraiseId,type,userId);

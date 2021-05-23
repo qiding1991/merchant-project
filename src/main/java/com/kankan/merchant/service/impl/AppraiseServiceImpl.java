@@ -57,6 +57,11 @@ public class AppraiseServiceImpl implements AppraiseService {
         if (!CollectionUtils.isEmpty(appraisesList)) {
             for (CommonAppraise appraise : appraisesList) {
                 appraise.setLikeNum(CollectionUtils.isEmpty(appraise.getLikeUsers())?0:appraise.getLikeUsers().size());
+                if (!CollectionUtils.isEmpty(appraise.getLikeUsers())) {
+                    appraise.setIsLike(appraise.getLikeUsers().contains(Integer.valueOf(commonAppraise.getUserId())));
+                } else {
+                    appraise.setIsLike(false);
+                }
             }
         }
         return appraisesList;
@@ -66,6 +71,7 @@ public class AppraiseServiceImpl implements AppraiseService {
     public void markLikeAppraise(String appraiseId,Integer type,String userId) {
         LogUtil.printLog(log,"markLikeAppraise appraiseId",appraiseId);
         LogUtil.printLog(log,"markLikeAppraise type",type);
+        LogUtil.printLog(log,"markLikeAppraise userId",userId);
         Update update = new Update();
         Query query = Query.query(Criteria.where("_id").is(appraiseId));
         CommonAppraise appraise = mongoTemplate.findOne(query,CommonAppraise.class);
