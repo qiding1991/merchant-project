@@ -33,6 +33,8 @@ public class CommonAppraise extends Appraise {
     private List<String> recommends;
     @ApiModelProperty(value = "评价时间", notes = "", required = false)
     private String createTime;
+    private Boolean isLike;//app
+    private List<Integer> likeUsers;//app
 
 
 }

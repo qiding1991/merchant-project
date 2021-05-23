@@ -28,6 +28,12 @@ public class AppraiseServiceImpl implements AppraiseService {
     @Override
     public CommonAppraise userAppraise(CommonAppraise commonAppraise) {
         commonAppraise.setTime(DateUtils.getCurDateTime());
+        if ("1".equals(commonAppraise.getType())) {
+            commonAppraise.setProductId(null);
+        }
+        if ("2".equals(commonAppraise.getType())) {
+            commonAppraise.setShopId(null);
+        }
         LogUtil.printLog(log,"add appraise input param ========>>{}",commonAppraise);
         return mongoTemplate.insert(commonAppraise);
     }
@@ -43,9 +49,6 @@ public class AppraiseServiceImpl implements AppraiseService {
         }
         if (!StringUtils.isEmpty(commonAppraise.getHot())) {
             query.addCriteria(Criteria.where("hot").is(commonAppraise.getHot()));
-        }
-        if (!StringUtils.isEmpty(commonAppraise.getUserId())) {
-            query.addCriteria(Criteria.where("userId").is(commonAppraise.getUserId()));
         }
         return mongoTemplate.find(query,CommonAppraise.class);
     }

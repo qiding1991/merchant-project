@@ -39,6 +39,7 @@ public class Merchant {
   private List<Appraise> appraiseList;
   private Integer thumpCount;
   private List<Integer> collectUsers;
+  private Boolean isCollection;
   private String registerTime;
   private String updateTime;
 }

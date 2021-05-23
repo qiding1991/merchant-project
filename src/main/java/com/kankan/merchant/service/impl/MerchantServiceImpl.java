@@ -251,17 +251,48 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public RegisterShopParam findByIdForClient(String shopId) {
+    public RegisterShopParam findByIdForClient(String shopId,String userId) {
         LogUtil.printLog(log,"findByIdForClient",shopId);
         Query query = Query.query(Criteria.where("_id").is(shopId));
         RegisterShopParam result = merchantToParam(mongoTemplate.findOne(query, Merchant.class),null);
+        result.setIsCollection(false);
+        if (CollectionUtils.isEmpty(result.getCollectUsers()) && result.getCollectUsers().contains(Integer.valueOf(userId))) {
+            result.setIsCollection(true);
+        }
         query = Query.query(Criteria.where("shopId").is(shopId));
         List<CommonProduct> productList = mongoTemplate.find(query, CommonProduct.class);
         for (CommonProduct product : productList) {
+            product.setIsCollection(false);
+            if (!CollectionUtils.isEmpty(product.getCollectUsers())) {
+                product.setIsCollection(product.getCollectUsers().contains(Integer.valueOf(userId)));
+            }
+            if (!CollectionUtils.isEmpty(product.getLikeUsers())) {
+                product.setIsLike(product.getLikeUsers().contains(Integer.valueOf(userId)));
+                product.setLikeNum(product.getLikeUsers().size());
+            }
             query = Query.query(Criteria.where("productId").is(product.getId()));
-            product.setAppraiseList(mongoTemplate.find(query, CommonAppraise.class));
+            List<CommonAppraise> appraiseList = mongoTemplate.find(query, CommonAppraise.class);
+            for (CommonAppraise appraise : appraiseList) {
+                if (!CollectionUtils.isEmpty(appraise.getLikeUsers())) {
+                    appraise.setIsLike(appraise.getLikeUsers().contains(Integer.valueOf(userId)));
+                    appraise.setLikeNum(appraise.getLikeUsers().size());
+                }
+            }
+            product.setAppraiseList(appraiseList);
         }
         result.setClientProductList(productList);
+        result.setCollectUsers(null);
+        query = Query.query(Criteria.where("shopId").is(shopId));
+        List<CommonAppraise> shopAppraiseList = mongoTemplate.find(query, CommonAppraise.class);
+        if (!CollectionUtils.isEmpty(shopAppraiseList)) {
+            for (CommonAppraise shopAppraise : shopAppraiseList) {
+                if (!CollectionUtils.isEmpty(shopAppraise.getLikeUsers())) {
+                    shopAppraise.setLikeNum(shopAppraise.getLikeUsers().size());
+                    shopAppraise.setIsLike(shopAppraise.getLikeUsers().contains(Integer.valueOf(userId)));
+                }
+            }
+            result.setShopAppraiseList(shopAppraiseList);
+        }
         return result;
     }
 
@@ -345,10 +376,19 @@ public class MerchantServiceImpl implements MerchantService {
         }
         if (!CollectionUtils.isEmpty(merchantList)) {
             for (Merchant merchant : merchantList) {
-                result.add(merchantToParam(merchant,registerShopParam.getUserLocation()));
+                RegisterShopParam item = merchantToParam(merchant,registerShopParam.getUserLocation());
+                item.setAppraiseNum(getShopAppraiseNum(merchant.getId()));
+                result.add(item);
             }
         }
         return result;
+    }
+
+    private Integer getShopAppraiseNum (String shopId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("shopId").is(shopId));
+        List<CommonAppraise> shopAppraiseList = mongoTemplate.find(query, CommonAppraise.class);
+        return CollectionUtils.isEmpty(shopAppraiseList)?0:shopAppraiseList.size();
     }
 
     @Override
@@ -418,7 +458,10 @@ public class MerchantServiceImpl implements MerchantService {
         List<RegisterShopParam> result = new ArrayList<>(merchantList.size());
         if (!CollectionUtils.isEmpty(merchantList)) {
             for (Merchant merchant : merchantList) {
-                result.add(merchantToParam(merchant,merchantQueryParam.getUserLocation()));
+                //result.add(merchantToParam(merchant,merchantQueryParam.getUserLocation()));
+                RegisterShopParam item = merchantToParam(merchant,merchantQueryParam.getUserLocation());
+                item.setAppraiseNum(getShopAppraiseNum(merchant.getId()));
+                result.add(item);
             }
         }
         return result;

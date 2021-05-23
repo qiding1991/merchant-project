@@ -20,7 +20,7 @@ public interface MerchantService {
 
   public List<RegisterShopParam> findShopList();
 
-  RegisterShopParam findByIdForClient(String shopId);
+  RegisterShopParam findByIdForClient(String shopId,String userId);
 
   List<Merchant> findShop(String classifyId);
 

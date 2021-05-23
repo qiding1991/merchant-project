@@ -2,6 +2,7 @@ package com.kankan.merchant.module.param;
 
 import com.kankan.merchant.model.Address;
 import com.kankan.merchant.model.product.Product;
+import com.kankan.merchant.module.merchant.common.CommonAppraise;
 import com.kankan.merchant.module.merchant.common.CommonProduct;
 import lombok.Data;
 
@@ -54,9 +55,11 @@ public class RegisterShopParam {
   private List<Integer> collectUsers;
   private String registerTime;
   private String updateTime;
+  private Boolean isCollection;
+  private Integer appraiseNum;
   private List<Product> productList = new ArrayList<>();
   private List<CommonProduct> clientProductList = new ArrayList<>();
-
+  private List<CommonAppraise> shopAppraiseList = new ArrayList<>();
   public RegisterShopParam () {}
   public RegisterShopParam (String id, Integer applyStatus) {
     this.id = id;

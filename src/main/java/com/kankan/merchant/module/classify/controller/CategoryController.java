@@ -35,6 +35,12 @@ public class CategoryController {
     return CommonResponse.success(categoryService.findAllCategory(parentId));
   }
 
+  @ApiOperation(value = "根据分类ID查询分类")
+  @GetMapping(value = "queryById")
+  public CommonResponse queryCategoryById(String id) {
+    return CommonResponse.success(categoryService.findById(id));
+  }
+
   @ApiOperation(value = "查询分类树",notes = "管理端查询分类树")
   @GetMapping(value = "queryTree")
   public CommonResponse queryCategoryForTree() {

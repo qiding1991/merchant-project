@@ -32,6 +32,8 @@ public interface CategoryService {
    */
   List<Category> findAllCategory(String categoryId);
 
+  Category findById(String id);
+
   Map<Category,Object> queryCategoryForTree();
 
   /**

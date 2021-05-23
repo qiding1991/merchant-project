@@ -20,10 +20,10 @@ public class ClientMerchantController {
 
     @ApiOperation(value = "商家详情服务")
     @RequestMapping(value = "/findDetail", method = RequestMethod.GET)
-    public CommonResponse findProduct (String shopId) {
+    public CommonResponse findProduct (String shopId,String userId) {
         if (null == shopId) {
             return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
         }
-        return CommonResponse.success(merchantService.findByIdForClient(shopId));
+        return CommonResponse.success(merchantService.findByIdForClient(shopId,userId));
     }
 }

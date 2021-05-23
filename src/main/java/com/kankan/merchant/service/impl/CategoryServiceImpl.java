@@ -50,6 +50,12 @@ public class CategoryServiceImpl implements CategoryService {
   }
 
   @Override
+  public Category findById(String id) {
+    LogUtil.printLog(log,"findById",id);
+    return mongoTemplate.findById(id,Category.class);
+  }
+
+  @Override
   public Map<Category,Object> queryCategoryForTree() {
     Query query = Query.query(Criteria.where("parentId").is(null));
     List<Category> category1List = mongoTemplate.find(query,Category.class);

@@ -159,6 +159,9 @@ public class ProductServiceImpl implements ProductService {
             }
         }
         product.setLikeUsers(markLikeUsers);
+        if (!CollectionUtils.isEmpty(markLikeUsers)) {
+            product.setLikeNum(markLikeUsers.size());
+        }
         mongoTemplate.save(product);
     }
 }
