@@ -16,6 +16,8 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -51,7 +53,13 @@ public class AppraiseServiceImpl implements AppraiseService {
         if (!StringUtils.isEmpty(commonAppraise.getHot())) {
             query.addCriteria(Criteria.where("hot").is(commonAppraise.getHot()));
         }
-        return mongoTemplate.find(query,CommonAppraise.class);
+        List<CommonAppraise> appraisesList = mongoTemplate.find(query,CommonAppraise.class);
+        if (!CollectionUtils.isEmpty(appraisesList)) {
+            for (CommonAppraise appraise : appraisesList) {
+                appraise.setLikeNum(CollectionUtils.isEmpty(appraise.getLikeUsers())?0:appraise.getLikeUsers().size());
+            }
+        }
+        return appraisesList;
     }
 
     @Override
@@ -65,6 +73,9 @@ public class AppraiseServiceImpl implements AppraiseService {
             return;
         }
         List<Integer> likeUsers = appraise.getLikeUsers();
+        if (CollectionUtils.isEmpty(likeUsers)) {
+            likeUsers = new ArrayList<>();
+        }
         if (1 == type) {
             likeUsers.add(Integer.valueOf(userId));
         }
