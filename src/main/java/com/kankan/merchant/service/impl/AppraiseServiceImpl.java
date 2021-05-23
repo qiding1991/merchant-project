@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import java.util.List;
 
@@ -54,19 +55,29 @@ public class AppraiseServiceImpl implements AppraiseService {
     }
 
     @Override
-    public void markLikeAppraise(String appraiseId,Integer type) {
+    public void markLikeAppraise(String appraiseId,Integer type,String userId) {
         LogUtil.printLog(log,"markLikeAppraise appraiseId",appraiseId);
         LogUtil.printLog(log,"markLikeAppraise type",type);
         Update update = new Update();
-        if (!StringUtils.isEmpty(appraiseId)) {
-            Query query = Query.query(Criteria.where("_id").is(appraiseId));
-            if (0 < type) {
-                update.inc("likeNum",1);
-            } else {
-                update.inc("likeNum",-1);
-            }
-            mongoTemplate.upsert(query,update,CommonAppraise.class);
+        Query query = Query.query(Criteria.where("_id").is(appraiseId));
+        CommonAppraise appraise = mongoTemplate.findOne(query,CommonAppraise.class);
+        if (null == appraise) {
+            return;
         }
+        List<Integer> likeUsers = appraise.getLikeUsers();
+        if (1 == type) {
+            likeUsers.add(Integer.valueOf(userId));
+        }
+        if (0 == type) {
+            likeUsers.remove(Integer.valueOf(userId));
+        }
+        appraise.setLikeUsers(likeUsers);
+        /*if (0 < type) {
+            update.inc("likeNum",1);
+        } else {
+            update.inc("likeNum",-1);
+        }*/
+        mongoTemplate.save(appraise);
     }
 
     @Override

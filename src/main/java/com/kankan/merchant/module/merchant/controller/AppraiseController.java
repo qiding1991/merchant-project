@@ -38,8 +38,8 @@ public class AppraiseController {
     @ApiImplicitParams({@ApiImplicitParam(name = "appraiseId", value = "评论ID", required = true, paramType = "query", dataType = "String"),
             @ApiImplicitParam(name = "type", value = "1点赞0取消点赞", required = true, paramType = "query", dataType = "Integer")})
     @PutMapping
-    public CommonResponse markLikeAppraise (String appraiseId,Integer type) {
-        appraiseService.markLikeAppraise(appraiseId,type);
+    public CommonResponse markLikeAppraise (String appraiseId,Integer type,String userId) {
+        appraiseService.markLikeAppraise(appraiseId,type,userId);
         return CommonResponse.success();
     }
 

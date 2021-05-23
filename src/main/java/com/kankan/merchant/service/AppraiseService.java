@@ -10,7 +10,7 @@ public interface AppraiseService {
 
    List<CommonAppraise> appraiseList (AppraiseParam commonAppraise);
 
-   void markLikeAppraise (String appraiseId,Integer type);
+   void markLikeAppraise (String appraiseId,Integer type,String userId);
 
    void markLikeProduct(String appraiseId,Integer type);
 
