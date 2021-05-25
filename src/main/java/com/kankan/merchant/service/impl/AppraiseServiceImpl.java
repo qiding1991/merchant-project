@@ -9,6 +9,7 @@ import com.kankan.merchant.utils.DateUtils;
 import com.kankan.merchant.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -50,8 +51,8 @@ public class AppraiseServiceImpl implements AppraiseService {
         } else {
             query.addCriteria(Criteria.where("productId").is(commonAppraise.getProductId()));
         }
-        if (!StringUtils.isEmpty(commonAppraise.getHot())) {
-            query.addCriteria(Criteria.where("hot").is(commonAppraise.getHot()));
+        if (!StringUtils.isEmpty(commonAppraise.getHot()) && "1".equals(commonAppraise.getHot())) {
+            query.with(Sort.by(Sort.Order.desc("wholeScore")));
         }
         List<CommonAppraise> appraisesList = mongoTemplate.find(query,CommonAppraise.class);
         if (!CollectionUtils.isEmpty(appraisesList)) {

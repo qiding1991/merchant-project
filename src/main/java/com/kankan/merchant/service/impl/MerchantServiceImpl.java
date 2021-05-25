@@ -1,5 +1,6 @@
 package com.kankan.merchant.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -260,6 +261,7 @@ public class MerchantServiceImpl implements MerchantService {
             result.setIsCollection(true);
         }
         query = Query.query(Criteria.where("shopId").is(shopId));
+        query.addCriteria(Criteria.where("applyStatus").is(2));
         List<CommonProduct> productList = mongoTemplate.find(query, CommonProduct.class);
         for (CommonProduct product : productList) {
             product.setIsCollection(false);
@@ -293,7 +295,45 @@ public class MerchantServiceImpl implements MerchantService {
             }
             result.setShopAppraiseList(shopAppraiseList);
         }
+        result.setAppraiseNum(getShopAppraiseNum(result.getId()));
+        enrichShopScore(result);
         return result;
+    }
+
+    private void enrichShopScore (RegisterShopParam shopParam) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("shopId").is(shopParam.getId()));
+        List<CommonAppraise> shopAppraiseList = mongoTemplate.find(query, CommonAppraise.class);
+        if (CollectionUtils.isEmpty(shopAppraiseList)) {
+            return;
+        }
+        int size = shopAppraiseList.size();
+        BigDecimal bigDecimalEnv = new BigDecimal(0.00);
+        BigDecimal bigDecimalFlavor = new BigDecimal(0.00);
+        BigDecimal bigDecimalService = new BigDecimal(0.00);
+        for (CommonAppraise appraise : shopAppraiseList) {
+            if (!StringUtils.isEmpty(appraise.getEnvScore())) {
+                bigDecimalEnv = bigDecimalEnv.add(BigDecimal.valueOf(Double.parseDouble(appraise.getEnvScore())));
+            }
+            if (!StringUtils.isEmpty(appraise.getFlavorScore())) {
+                bigDecimalFlavor = bigDecimalFlavor.add(BigDecimal.valueOf(Double.parseDouble(appraise.getFlavorScore())));
+            }
+            if (!StringUtils.isEmpty(appraise.getServiceScore())) {
+                bigDecimalService = bigDecimalService.add(BigDecimal.valueOf(Double.parseDouble(appraise.getServiceScore())));
+            }
+        }
+        if (bigDecimalEnv.doubleValue() > 0) {
+            double bigDecimalEnvAver = bigDecimalEnv.doubleValue()/size;
+            shopParam.setEnvScore(String.valueOf(bigDecimalEnvAver));
+        }
+        if (bigDecimalFlavor.doubleValue() > 0) {
+            double bigDecimalFlavorAver = bigDecimalFlavor.doubleValue()/size;
+            shopParam.setFlavorScore(String.valueOf(bigDecimalFlavorAver));
+        }
+        if (bigDecimalService.doubleValue() > 0) {
+            double bigDecimalServiceAver = bigDecimalService.doubleValue()/size;
+            shopParam.setServiceScore(String.valueOf(bigDecimalServiceAver));
+        }
     }
 
     @Override
