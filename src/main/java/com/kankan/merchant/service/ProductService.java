@@ -23,6 +23,8 @@ public interface ProductService {
 
   List<CommonProduct> findAllProduct ();
 
+  List<CommonProduct> getCollectProductListByUserId (final String userId);
+
   void productCollect (CollectLikeParam param);
 
   void productMarkLike (CollectLikeParam param);

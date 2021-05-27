@@ -43,4 +43,16 @@ public class ClientCollectController {
         merchantService.shopCollect(param);
         return CommonResponse.success();
     }
+
+    @ApiOperation(value = "获取我的店铺收藏列表服务")
+    @RequestMapping(value = "collectShopList", method = RequestMethod.GET)
+    public CommonResponse shopCollect (String userId) {
+        return CommonResponse.success(merchantService.getCollectShopListByUserId(userId));
+    }
+
+    @ApiOperation(value = "获取我的产品收藏列表服务")
+    @RequestMapping(value = "collectProductList", method = RequestMethod.GET)
+    public CommonResponse productCollect (String userId) {
+        return CommonResponse.success(productService.getCollectProductListByUserId(userId));
+    }
 }

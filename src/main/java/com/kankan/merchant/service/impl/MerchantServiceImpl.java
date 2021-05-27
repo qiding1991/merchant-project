@@ -257,7 +257,7 @@ public class MerchantServiceImpl implements MerchantService {
         Query query = Query.query(Criteria.where("_id").is(shopId));
         RegisterShopParam result = merchantToParam(mongoTemplate.findOne(query, Merchant.class),null);
         result.setIsCollection(false);
-        if (!CollectionUtils.isEmpty(result.getCollectUsers()) && result.getCollectUsers().contains(Integer.valueOf(userId))) {
+        if (!CollectionUtils.isEmpty(result.getCollectUsers()) && !StringUtils.isEmpty(userId) && result.getCollectUsers().contains(Integer.valueOf(userId))) {
             result.setIsCollection(true);
         }
         query = Query.query(Criteria.where("shopId").is(shopId));
@@ -265,18 +265,22 @@ public class MerchantServiceImpl implements MerchantService {
         List<CommonProduct> productList = mongoTemplate.find(query, CommonProduct.class);
         for (CommonProduct product : productList) {
             product.setIsCollection(false);
-            if (!CollectionUtils.isEmpty(product.getCollectUsers())) {
+            if (!CollectionUtils.isEmpty(product.getCollectUsers()) && !StringUtils.isEmpty(userId)) {
                 product.setIsCollection(product.getCollectUsers().contains(Integer.valueOf(userId)));
             }
             if (!CollectionUtils.isEmpty(product.getLikeUsers())) {
-                product.setIsLike(product.getLikeUsers().contains(Integer.valueOf(userId)));
+                if (!StringUtils.isEmpty(userId)) {
+                    product.setIsLike(product.getLikeUsers().contains(Integer.valueOf(userId)));
+                }
                 product.setLikeNum(product.getLikeUsers().size());
             }
             query = Query.query(Criteria.where("productId").is(product.getId()));
             List<CommonAppraise> appraiseList = mongoTemplate.find(query, CommonAppraise.class);
             for (CommonAppraise appraise : appraiseList) {
                 if (!CollectionUtils.isEmpty(appraise.getLikeUsers())) {
-                    appraise.setIsLike(appraise.getLikeUsers().contains(Integer.valueOf(userId)));
+                    if (!StringUtils.isEmpty(userId)) {
+                        appraise.setIsLike(appraise.getLikeUsers().contains(Integer.valueOf(userId)));
+                    }
                     appraise.setLikeNum(appraise.getLikeUsers().size());
                 }
             }
@@ -290,7 +294,9 @@ public class MerchantServiceImpl implements MerchantService {
             for (CommonAppraise shopAppraise : shopAppraiseList) {
                 if (!CollectionUtils.isEmpty(shopAppraise.getLikeUsers())) {
                     shopAppraise.setLikeNum(shopAppraise.getLikeUsers().size());
-                    shopAppraise.setIsLike(shopAppraise.getLikeUsers().contains(Integer.valueOf(userId)));
+                    if (!StringUtils.isEmpty(userId)) {
+                        shopAppraise.setIsLike(shopAppraise.getLikeUsers().contains(Integer.valueOf(userId)));
+                    }
                 }
             }
             result.setShopAppraiseList(shopAppraiseList);
@@ -342,6 +348,11 @@ public class MerchantServiceImpl implements MerchantService {
         return list.stream().map(item -> {
             return merchantToParam(item,null);
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RegisterShopParam> getCollectShopListByUserId (final String userId) {
+        return this.findShopList().stream().filter(item -> item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
     }
 
     @Override
@@ -408,7 +419,7 @@ public class MerchantServiceImpl implements MerchantService {
             query.addCriteria(Criteria.where("hot").is(registerShopParam.getHot()));
             merchantList = mongoTemplate.find(query, Merchant.class);
         }
-        if (!StringUtils.isEmpty(registerShopParam.getLocation())) {
+        if (!StringUtils.isEmpty(registerShopParam.getLocation()) && registerShopParam.getLocation().contains(";")) {
             String [] locationArray = registerShopParam.getLocation().split(";");
             Point point = new Point(Double.parseDouble(locationArray[0]),Double.parseDouble(locationArray[1]));
             query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000));
@@ -427,6 +438,7 @@ public class MerchantServiceImpl implements MerchantService {
     private Integer getShopAppraiseNum (String shopId) {
         Query query = new Query();
         query.addCriteria(Criteria.where("shopId").is(shopId));
+        query.addCriteria(Criteria.where("type").is("1"));
         List<CommonAppraise> shopAppraiseList = mongoTemplate.find(query, CommonAppraise.class);
         return CollectionUtils.isEmpty(shopAppraiseList)?0:shopAppraiseList.size();
     }

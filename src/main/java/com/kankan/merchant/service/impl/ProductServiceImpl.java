@@ -2,6 +2,8 @@ package com.kankan.merchant.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import com.kankan.merchant.module.merchant.common.CommonProduct;
 import com.kankan.merchant.module.param.CollectLikeParam;
 import com.kankan.merchant.module.param.ProductUpdateParam;
@@ -107,9 +109,15 @@ public class ProductServiceImpl implements ProductService {
         return mongoTemplate.findAll(CommonProduct.class);
     }
 
-
+    @Override
     public List<CommonProduct> findAllProduct () {
         return mongoTemplate.findAll(CommonProduct.class);
+    }
+
+    @Override
+    public List<CommonProduct> getCollectProductListByUserId (final String userId) {
+        List<CommonProduct> result = this.findAllProduct();
+        return result.stream().filter(item -> item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
     }
 
     @Override
