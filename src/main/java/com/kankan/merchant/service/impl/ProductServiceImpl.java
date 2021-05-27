@@ -117,7 +117,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<CommonProduct> getCollectProductListByUserId (final String userId) {
         List<CommonProduct> result = this.findAllProduct();
-        return result.stream().filter(item -> item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
+        return result.stream().filter(item -> !CollectionUtils.isEmpty(item.getCollectUsers()) && item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
     }
 
     @Override

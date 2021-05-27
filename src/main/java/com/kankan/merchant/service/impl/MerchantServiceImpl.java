@@ -352,7 +352,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public List<RegisterShopParam> getCollectShopListByUserId (final String userId) {
-        return this.findShopList().stream().filter(item -> item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
+        return this.findShopList().stream().filter(item -> !CollectionUtils.isEmpty(item.getCollectUsers()) && item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
     }
 
     @Override

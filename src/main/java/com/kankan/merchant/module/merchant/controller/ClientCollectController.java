@@ -2,6 +2,8 @@ package com.kankan.merchant.module.merchant.controller;
 
 
 import com.kankan.merchant.common.CommonResponse;
+import com.kankan.merchant.common.ErrorCode;
+import org.springframework.util.StringUtils;
 import com.kankan.merchant.module.param.CollectLikeParam;
 import com.kankan.merchant.service.MerchantService;
 import com.kankan.merchant.service.ProductService;
@@ -47,12 +49,18 @@ public class ClientCollectController {
     @ApiOperation(value = "获取我的店铺收藏列表服务")
     @RequestMapping(value = "collectShopList", method = RequestMethod.GET)
     public CommonResponse shopCollect (String userId) {
+        if (StringUtils.isEmpty(userId)) {
+            return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
+        }
         return CommonResponse.success(merchantService.getCollectShopListByUserId(userId));
     }
 
     @ApiOperation(value = "获取我的产品收藏列表服务")
     @RequestMapping(value = "collectProductList", method = RequestMethod.GET)
     public CommonResponse productCollect (String userId) {
+        if (StringUtils.isEmpty(userId)) {
+            return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
+        }
         return CommonResponse.success(productService.getCollectProductListByUserId(userId));
     }
 }
