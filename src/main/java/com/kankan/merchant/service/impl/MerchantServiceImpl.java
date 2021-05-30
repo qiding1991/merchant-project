@@ -4,16 +4,16 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.kankan.merchant.common.AreaEnum;
 import com.kankan.merchant.common.MerchantConstant;
 import com.kankan.merchant.model.Address;
 import com.kankan.merchant.model.product.Product;
+import com.kankan.merchant.module.classify.model.Category;
 import com.kankan.merchant.module.merchant.ApplyInfo;
 import com.kankan.merchant.module.merchant.common.CommonAppraise;
 import com.kankan.merchant.module.merchant.common.CommonProduct;
-import com.kankan.merchant.module.param.CollectLikeParam;
-import com.kankan.merchant.module.param.MerchantApplyParam;
-import com.kankan.merchant.module.param.MerchantQueryParam;
-import com.kankan.merchant.module.param.RegisterShopParam;
+import com.kankan.merchant.module.merchant.dto.SearchResultDto;
+import com.kankan.merchant.module.param.*;
 import com.kankan.merchant.service.UserPrivilegeService;
 import com.kankan.merchant.utils.DateUtils;
 import com.kankan.merchant.utils.LogUtil;
@@ -422,7 +422,7 @@ public class MerchantServiceImpl implements MerchantService {
         if (!StringUtils.isEmpty(registerShopParam.getLocation()) && registerShopParam.getLocation().contains(";")) {
             String [] locationArray = registerShopParam.getLocation().split(";");
             Point point = new Point(Double.parseDouble(locationArray[0]),Double.parseDouble(locationArray[1]));
-            query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000));
+            query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000.00));
             merchantList = mongoTemplate.find(query, Merchant.class);
         }
         if (!CollectionUtils.isEmpty(merchantList)) {
@@ -446,18 +446,37 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public List<RegisterShopParam> chooseShop (MerchantQueryParam merchantQueryParam) {
         LogUtil.printLog(log,"chooseShop",merchantQueryParam);
+        Query query = buildQueryCondition(merchantQueryParam);
+        List<Merchant> merchantList = mongoTemplate.find(query, Merchant.class);
+        List<RegisterShopParam> result = new ArrayList<>(merchantList.size());
+        if (!CollectionUtils.isEmpty(merchantList)) {
+            for (Merchant merchant : merchantList) {
+                //result.add(merchantToParam(merchant,merchantQueryParam.getUserLocation()));
+                RegisterShopParam item = merchantToParam(merchant,merchantQueryParam.getUserLocation());
+                item.setAppraiseNum(getShopAppraiseNum(merchant.getId()));
+                result.add(item);
+            }
+        }
+        return result;
+    }
+
+    private Query buildQueryCondition (MerchantQueryParam merchantQueryParam) {
         Query query = new Query();
-        if (null != merchantQueryParam.getCategory2()) {
+        if (!StringUtils.isEmpty(merchantQueryParam.getCategory1()) && !"0".equals(merchantQueryParam.getCategory1())) {
+            query.addCriteria(Criteria.where("category1").is(merchantQueryParam.getCategory1()));
+        }
+        if (!StringUtils.isEmpty(merchantQueryParam.getCategory2()) && !"0".equals(merchantQueryParam.getCategory2())) {
             query.addCriteria(Criteria.where("category2").is(merchantQueryParam.getCategory2()));
         }
         if (!StringUtils.isEmpty(merchantQueryParam.getAreaCode()) && !"0".equals(merchantQueryParam.getAreaCode())) {
             query.addCriteria(Criteria.where("address.$.area").is(merchantQueryParam.getAreaCode()));
         }
         if (merchantQueryParam.getIntelligentType() > 0) {
-            if (1 == merchantQueryParam.getIntelligentType() && null != merchantQueryParam.getLocation()) {
+            if (1 == merchantQueryParam.getIntelligentType() && null != merchantQueryParam.getLocation()
+                    && merchantQueryParam.getLocation().contains(";")) {
                 String [] locationArray = merchantQueryParam.getLocation().split(";");
                 Point point = new Point(Double.parseDouble(locationArray[0]),Double.parseDouble(locationArray[1]));
-                query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5.00));
+                query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000.00));
             }
             if (2 == merchantQueryParam.getIntelligentType()) {
                 query.with(Sort.by(Sort.Order.desc("wholeScore")));
@@ -469,20 +488,6 @@ public class MerchantServiceImpl implements MerchantService {
                 query.with(Sort.by(Sort.Order.desc("averagePrice")));
             }
         }
-        /*if (merchantQueryParam.getShopType() > 0) {
-            //todo 商家需要添加商家类型字段
-            switch (merchantQueryParam.getShopType()) {
-                case 1:
-                    query.addCriteria(Criteria.where("averagePrice").lt(10));
-                    break;
-                case 2:
-                    query.addCriteria(Criteria.where("averagePrice").lt(30));
-                    break;
-                case 3:
-                    query.addCriteria(Criteria.where("averagePrice").lt(60));
-                    break;
-            }
-        }*/
         if (merchantQueryParam.getPrice() > 0) {
             switch (merchantQueryParam.getPrice()) {
                 case 1:
@@ -506,17 +511,108 @@ public class MerchantServiceImpl implements MerchantService {
             String [] scoreLimit = merchantQueryParam.getWholeScore().split(",");
             query.addCriteria(Criteria.where("wholeScore").gte(Double.parseDouble(scoreLimit[0])).lte(Double.parseDouble(scoreLimit[1])));
         }
+        return query;
+    }
+
+    private List<SearchResultDto> searchShop (SearchParam searchParam) {
+        Query query = buildQueryCondition(searchParam);
+        query.addCriteria(Criteria.where("name").regex(".*?\\"+searchParam.getName()+".*"));
         List<Merchant> merchantList = mongoTemplate.find(query, Merchant.class);
-        List<RegisterShopParam> result = new ArrayList<>(merchantList.size());
-        if (!CollectionUtils.isEmpty(merchantList)) {
-            for (Merchant merchant : merchantList) {
-                //result.add(merchantToParam(merchant,merchantQueryParam.getUserLocation()));
-                RegisterShopParam item = merchantToParam(merchant,merchantQueryParam.getUserLocation());
-                item.setAppraiseNum(getShopAppraiseNum(merchant.getId()));
-                result.add(item);
+        if (CollectionUtils.isEmpty(merchantList)) {
+            return new ArrayList<>();
+        }
+        List<Category> categoryList = mongoTemplate.findAll(Category.class);
+        List<SearchResultDto> result = new ArrayList<>(merchantList.size());
+        SearchResultDto searchResultDto;
+        for (Merchant merchant : merchantList) {
+            searchResultDto = new SearchResultDto();
+            searchResultDto.setId(merchant.getId());
+            searchResultDto.setName(merchant.getName());
+            searchResultDto.setWholeScore(merchant.getWholeScore());
+            searchResultDto.setAveragePrice(String.valueOf(merchant.getAveragePrice()));
+            if (null != merchant.getAddress()) {
+                searchResultDto.setArea(AreaEnum.getNameByCode(merchant.getAddress().getArea()));
             }
+            if (null != merchant.getApplyInfo()) {
+                searchResultDto.setPicture(merchant.getApplyInfo().getIDUrl());
+            }
+            searchResultDto.setServiceTime(merchant.getServiceTime());
+            if (!CollectionUtils.isEmpty(categoryList)) {
+                for (Category category : categoryList) {
+                    if (category.getId().equals(merchant.getCategory2())) {
+                        searchResultDto.setCategoryName(category.getName());
+                    }
+                }
+            }
+            result.add(searchResultDto);
         }
         return result;
+    }
+
+    private List<SearchResultDto> searchProduct (SearchParam searchParam) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("productName").regex(".*?\\"+searchParam.getName()+".*"));
+        if (searchParam.getIntelligentType() > 0) {
+            if (3 == searchParam.getIntelligentType()) {
+                query.with(Sort.by(Sort.Order.asc("price")));
+            }
+            if (4 == searchParam.getIntelligentType()) {
+                query.with(Sort.by(Sort.Order.desc("price")));
+            }
+        }
+        if (searchParam.getPrice() > 0) {
+            switch (searchParam.getPrice()) {
+                case 1:
+                    query.addCriteria(Criteria.where("price").lt(10));
+                    break;
+                case 2:
+                    query.addCriteria(Criteria.where("price").gte(10).lt(30));
+                    break;
+                case 3:
+                    query.addCriteria(Criteria.where("price").gte(30).lt(60));
+                    break;
+                case 4:
+                    query.addCriteria(Criteria.where("price").gte(60));
+                    break;
+            }
+        }
+        List<CommonProduct> productList = mongoTemplate.find(query, CommonProduct.class);
+        if (CollectionUtils.isEmpty(productList)) {
+            return new ArrayList<>();
+        }
+        List<Category> categoryList = mongoTemplate.findAll(Category.class);
+        List<SearchResultDto> result = new ArrayList<>(productList.size());
+        SearchResultDto searchResultDto;
+        Merchant merchant;
+        for (CommonProduct product : productList) {
+            searchResultDto = new SearchResultDto();
+            searchResultDto.setId(product.getId());
+            searchResultDto.setName(product.getProductName());
+            searchResultDto.setAveragePrice(String.valueOf(product.getPrice()));
+            searchResultDto.setPicture(product.getFacePicture());
+            merchant = mongoTemplate.findById(product.getShopId(),Merchant.class);
+            if (!CollectionUtils.isEmpty(categoryList) && null != merchant) {
+                if (null != merchant.getAddress()) {
+                    searchResultDto.setArea(AreaEnum.getNameByCode(merchant.getAddress().getArea()));
+                }
+                searchResultDto.setShopName(merchant.getName());
+                for (Category category : categoryList) {
+                    if (category.getId().equals(merchant.getCategory2())) {
+                        searchResultDto.setCategoryName(category.getName());
+                    }
+                }
+            }
+            result.add(searchResultDto);
+        }
+        return result;
+    }
+
+    public List<SearchResultDto> search (SearchParam searchParam) {
+        LogUtil.printLog(log,"searchShop",searchParam);
+        if (1 == searchParam.getType()) {
+            return searchShop(searchParam);
+        }
+        return searchProduct(searchParam);
     }
 
     @Override

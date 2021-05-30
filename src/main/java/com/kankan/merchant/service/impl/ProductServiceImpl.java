@@ -3,14 +3,16 @@ package com.kankan.merchant.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import com.kankan.merchant.module.merchant.Merchant;
 import com.kankan.merchant.module.merchant.common.CommonProduct;
+import com.kankan.merchant.module.merchant.dto.ProductResultDto;
 import com.kankan.merchant.module.param.CollectLikeParam;
 import com.kankan.merchant.module.param.ProductUpdateParam;
 import com.kankan.merchant.utils.DateUtils;
 import com.kankan.merchant.utils.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -110,13 +112,28 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<CommonProduct> findAllProduct () {
-        return mongoTemplate.findAll(CommonProduct.class);
+    public List<ProductResultDto> findAllProduct () {
+        List<CommonProduct> list = mongoTemplate.findAll(CommonProduct.class);
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
+        List<ProductResultDto> result = new ArrayList<>(list.size());
+        ProductResultDto productResultDto;
+        for (CommonProduct product : list) {
+            productResultDto = new ProductResultDto();
+            Merchant shop = mongoTemplate.findById(product.getShopId(), Merchant.class);
+            BeanUtils.copyProperties(product,productResultDto);
+            if (null != shop) {
+                productResultDto.setShopName(shop.getName());
+            }
+            result.add(productResultDto);
+        }
+        return result;
     }
 
     @Override
     public List<CommonProduct> getCollectProductListByUserId (final String userId) {
-        List<CommonProduct> result = this.findAllProduct();
+        List<CommonProduct> result = mongoTemplate.findAll(CommonProduct.class);
         return result.stream().filter(item -> !CollectionUtils.isEmpty(item.getCollectUsers()) && item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
     }
 

@@ -2,6 +2,7 @@ package com.kankan.merchant.module.merchant.controller;
 
 import com.kankan.merchant.module.param.MerchantApplyParam;
 import com.kankan.merchant.module.param.MerchantQueryParam;
+import com.kankan.merchant.module.param.SearchParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -107,6 +108,16 @@ public class MerchantController {
             return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
         }
         return CommonResponse.success(merchantService.chooseShop(merchantQueryParam));
+    }
+
+    @ApiOperation(value = "客户端首页搜索",notes = "根据name名称模糊匹配,type为1商家2产品")
+    @RequestMapping(value = "/searchShop", method = RequestMethod.GET)
+    public CommonResponse searchShop (SearchParam searchParam) {
+      if (null == searchParam || StringUtils.isEmpty(searchParam.getName())
+      || searchParam.getType() > 2 || searchParam.getType() < 1 || 0 == searchParam.getType()) {
+        return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
+      }
+      return CommonResponse.success(merchantService.search(searchParam));
     }
 
 }

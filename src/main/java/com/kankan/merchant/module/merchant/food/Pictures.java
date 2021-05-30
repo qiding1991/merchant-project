@@ -6,6 +6,7 @@ import lombok.Data;
 public class Pictures {
 
     private String id;
+    //1->shop upload 2->user upload
     private Integer type;
     private String url;
 }

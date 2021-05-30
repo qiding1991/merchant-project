@@ -54,6 +54,9 @@ public class AppraiseServiceImpl implements AppraiseService {
         if (!StringUtils.isEmpty(commonAppraise.getHot()) && "1".equals(commonAppraise.getHot())) {
             query.with(Sort.by(Sort.Order.desc("wholeScore")));
         }
+        if (!StringUtils.isEmpty(commonAppraise.getHot()) && "2".equals(commonAppraise.getHot())) {
+            query.with(Sort.by(Sort.Order.desc("_id")));
+        }
         List<CommonAppraise> appraisesList = mongoTemplate.find(query,CommonAppraise.class);
         if (!CollectionUtils.isEmpty(appraisesList)) {
             for (CommonAppraise appraise : appraisesList) {
