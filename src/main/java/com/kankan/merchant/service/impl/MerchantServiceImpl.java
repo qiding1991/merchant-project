@@ -417,14 +417,13 @@ public class MerchantServiceImpl implements MerchantService {
         List<Merchant> merchantList = new ArrayList<>();
         if (!StringUtils.isEmpty(registerShopParam.getHot())) {
             query.addCriteria(Criteria.where("hot").is(registerShopParam.getHot()));
-            merchantList = mongoTemplate.find(query, Merchant.class);
         }
         if (!StringUtils.isEmpty(registerShopParam.getLocation()) && registerShopParam.getLocation().contains(";")) {
             String [] locationArray = registerShopParam.getLocation().split(";");
             Point point = new Point(Double.parseDouble(locationArray[0]),Double.parseDouble(locationArray[1]));
             query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000.00));
-            merchantList = mongoTemplate.find(query, Merchant.class);
         }
+        merchantList = mongoTemplate.find(query, Merchant.class);
         if (!CollectionUtils.isEmpty(merchantList)) {
             for (Merchant merchant : merchantList) {
                 RegisterShopParam item = merchantToParam(merchant,registerShopParam.getUserLocation());

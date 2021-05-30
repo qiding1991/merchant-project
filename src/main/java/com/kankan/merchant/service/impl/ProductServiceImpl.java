@@ -83,6 +83,9 @@ public class ProductServiceImpl implements ProductService {
         if (!StringUtils.isEmpty(product.getDescription())) {
             update.set("description",product.getDescription());
         }
+        if (!StringUtils.isEmpty(product.getProductPictures())) {
+            update.set("productPictures",product.getProductPictures());
+        }
         update.set("updateTime", DateUtils.getCurDateTime());
         return update;
     }
