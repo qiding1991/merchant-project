@@ -3,8 +3,10 @@ package com.kankan.merchant.service.impl;
 import com.google.gson.Gson;
 import com.kankan.merchant.module.merchant.common.CommonAppraise;
 import com.kankan.merchant.module.merchant.common.CommonProduct;
+import com.kankan.merchant.module.merchant.food.Pictures;
 import com.kankan.merchant.module.param.AppraiseParam;
 import com.kankan.merchant.service.AppraiseService;
+import com.kankan.merchant.service.ProductService;
 import com.kankan.merchant.utils.DateUtils;
 import com.kankan.merchant.utils.LogUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +19,9 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -27,6 +29,9 @@ public class AppraiseServiceImpl implements AppraiseService {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    private ProductService productService;
+
     private Gson gson = new Gson();
 
     @Override
@@ -61,7 +66,7 @@ public class AppraiseServiceImpl implements AppraiseService {
         if (!CollectionUtils.isEmpty(appraisesList)) {
             for (CommonAppraise appraise : appraisesList) {
                 appraise.setLikeNum(CollectionUtils.isEmpty(appraise.getLikeUsers())?0:appraise.getLikeUsers().size());
-                if (!CollectionUtils.isEmpty(appraise.getLikeUsers())) {
+                if (!CollectionUtils.isEmpty(appraise.getLikeUsers()) && !StringUtils.isEmpty(commonAppraise.getUserId())) {
                     appraise.setIsLike(appraise.getLikeUsers().contains(Integer.valueOf(commonAppraise.getUserId())));
                 } else {
                     appraise.setIsLike(false);
@@ -69,6 +74,35 @@ public class AppraiseServiceImpl implements AppraiseService {
             }
         }
         return appraisesList;
+    }
+
+    @Override
+    public List<Pictures> getShopPictures(String shopId) {
+        List<Pictures> result = new ArrayList<>();
+        AppraiseParam appraiseParam = new AppraiseParam();
+        appraiseParam.setType("1");
+        appraiseParam.setShopId(shopId);
+        List<CommonAppraise> shopList = appraiseList(appraiseParam);
+        for (CommonAppraise commonAppraise : shopList) {
+            if (null != commonAppraise && !CollectionUtils.isEmpty(commonAppraise.getAppraisePictures())) {
+                result.addAll(commonAppraise.getAppraisePictures());
+            }
+        }
+        List<CommonProduct> productList = productService.findAllProduct(shopId);
+        if (CollectionUtils.isEmpty(productList)) {
+            return result;
+        }
+        List<String> productIdList = productList.stream().map(CommonProduct::getId).collect(Collectors.toList());
+        Query query = new Query(Criteria.where("productId").in(productIdList));
+        List<CommonAppraise> appraisesList = mongoTemplate.find(query,CommonAppraise.class);
+        if (!CollectionUtils.isEmpty(appraisesList)) {
+            for (CommonAppraise commonAppraise : appraisesList) {
+                if (null != commonAppraise && !CollectionUtils.isEmpty(commonAppraise.getAppraisePictures())) {
+                    result.addAll(commonAppraise.getAppraisePictures());
+                }
+            }
+        }
+        return result;
     }
 
     @Override
