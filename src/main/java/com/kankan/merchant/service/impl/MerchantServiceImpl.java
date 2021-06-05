@@ -527,7 +527,7 @@ public class MerchantServiceImpl implements MerchantService {
             searchResultDto = new SearchResultDto();
             searchResultDto.setId(merchant.getId());
             searchResultDto.setName(merchant.getName());
-            searchResultDto.setWholeScore(merchant.getWholeScore());
+            searchResultDto.setWholeScore(null == merchant.getWholeScore()?0.00:merchant.getWholeScore());
             searchResultDto.setAveragePrice(String.valueOf(merchant.getAveragePrice()));
             if (null != merchant.getAddress()) {
                 searchResultDto.setArea(AreaEnum.getNameByCode(merchant.getAddress().getArea()));
