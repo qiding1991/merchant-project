@@ -538,7 +538,7 @@ public class MerchantServiceImpl implements MerchantService {
             searchResultDto.setServiceTime(merchant.getServiceTime());
             if (!CollectionUtils.isEmpty(categoryList)) {
                 for (Category category : categoryList) {
-                    if (null == category) {
+                    if (null == category || null == category.getId()) {
                         continue;
                     }
                     if (category.getId().equals(merchant.getCategory2())) {
