@@ -3,7 +3,10 @@ package com.kankan.merchant.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.kankan.merchant.module.merchant.Appraise;
 import com.kankan.merchant.module.merchant.Merchant;
+import com.kankan.merchant.module.merchant.common.CommonAppraise;
 import com.kankan.merchant.module.merchant.common.CommonProduct;
 import com.kankan.merchant.module.merchant.dto.ProductResultDto;
 import com.kankan.merchant.module.param.CollectLikeParam;
@@ -132,6 +135,43 @@ public class ProductServiceImpl implements ProductService {
             result.add(productResultDto);
         }
         return result;
+    }
+
+    public ProductResultDto findDetailForClient (String productId,Integer userId) {
+        ProductResultDto productResultDto = new ProductResultDto();
+        CommonProduct product = mongoTemplate.findById(productId,CommonProduct.class);
+        if (null == product) {
+            return productResultDto;
+        }
+        BeanUtils.copyProperties(product,productResultDto);
+        Merchant shop = mongoTemplate.findById(product.getShopId(), Merchant.class);
+        if (null != shop) {
+            productResultDto.setShopId(shop.getId());
+            productResultDto.setShopName(shop.getName());
+        }
+        if (!StringUtils.isEmpty(userId)) {
+            productResultDto.setIsCollection(false);
+            if (!CollectionUtils.isEmpty(product.getCollectUsers()) && product.getCollectUsers().contains(userId)) {
+                productResultDto.setIsCollection(true);
+            }
+            productResultDto.setIsLike(false);
+            if (!CollectionUtils.isEmpty(product.getLikeUsers()) && product.getLikeUsers().contains(userId)) {
+                productResultDto.setIsLike(true);
+            }
+        }
+        Query query = Query.query(Criteria.where("productId").is(product.getId()));
+        List<CommonAppraise> appraiseList = mongoTemplate.find(query, CommonAppraise.class);
+        for (CommonAppraise appraise : appraiseList) {
+            if (!CollectionUtils.isEmpty(appraise.getLikeUsers())) {
+                if (!StringUtils.isEmpty(userId)) {
+                    appraise.setIsLike(appraise.getLikeUsers().contains(userId));
+                }
+                appraise.setLikeNum(appraise.getLikeUsers().size());
+            }
+        }
+        productResultDto.setAppraiseList(appraiseList);
+        productResultDto.setApplyStatus(null);
+        return productResultDto;
     }
 
     @Override

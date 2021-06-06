@@ -24,6 +24,8 @@ public interface ProductService {
 
   List<ProductResultDto> findAllProduct ();
 
+  ProductResultDto findDetailForClient (String productId,Integer userId);
+
   List<CommonProduct> getCollectProductListByUserId (final String userId);
 
   void productCollect (CollectLikeParam param);

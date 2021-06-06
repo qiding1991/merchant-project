@@ -168,7 +168,6 @@ public class MerchantServiceImpl implements MerchantService {
         registerShopParam.setRegisterTime(merchant.getRegisterTime());
         registerShopParam.setUpdateTime(merchant.getUpdateTime());
         registerShopParam.setUserId(merchant.getUserId());
-        registerShopParam.setRegion(merchant.getAddress().getArea());
         if (!StringUtils.isEmpty(userLocation)) {
             Point point = merchant.getLocation();
             registerShopParam.setDistance(String.valueOf(getDistance(point,registerShopParam.getUserLocation())));
@@ -222,9 +221,6 @@ public class MerchantServiceImpl implements MerchantService {
         }
         if (!StringUtils.isEmpty(param.getShopPicture())) {
             update.set("applyInfo.$.photos",param.getShopPicture());
-        }
-        if (!StringUtils.isEmpty(param.getSourceFrom())) {
-            update.set("applyInfo.$.yelp",1==param.getSourceFrom());
         }
         if (!StringUtils.isEmpty(param.getCategory1())) {
             update.set("category1",param.getCategory1());
@@ -595,6 +591,12 @@ public class MerchantServiceImpl implements MerchantService {
                         searchResultDto.setCategoryName(category.getName());
                     }
                 }
+            }
+            if (null != merchant.getLocation()) {
+                String location = String.valueOf(merchant.getLocation().getX());
+                location = location.concat(";");
+                location = location.concat(String.valueOf(merchant.getLocation().getY()));
+                searchResultDto.setLocation(location);
             }
             result.add(searchResultDto);
         }

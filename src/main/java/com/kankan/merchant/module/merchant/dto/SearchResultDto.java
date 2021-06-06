@@ -14,4 +14,5 @@ public class SearchResultDto {
     private String area;
     private String categoryName;
     private String serviceTime;
+    private String location;
 }
