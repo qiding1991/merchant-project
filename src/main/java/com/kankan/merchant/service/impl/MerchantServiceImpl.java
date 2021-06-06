@@ -208,31 +208,81 @@ public class MerchantServiceImpl implements MerchantService {
 
     private Update buildUpdate(RegisterShopParam param) {
         Update update = new Update();
-        update = !StringUtils.isEmpty(param.getUserId())?update.set("userId",param.getUserId()):update;
-        update = !StringUtils.isEmpty(param.getShopName())?update.set("shopName",param.getShopName()):update;
-        update = !StringUtils.isEmpty(param.getCompanyName())?update.set("applyInfo.$.companyName",param.getCompanyName()):update;
-        update = !StringUtils.isEmpty(param.getFile())?update.set("applyInfo.$.IDUrl",param.getFile()):update;
-        update = !StringUtils.isEmpty(param.getShopPicture())?update.set("applyInfo.$.photos",param.getShopPicture()):update;
-        update = !StringUtils.isEmpty(param.getSourceFrom())?update.set("applyInfo.$.yelp",param.getSourceFrom()):update;
-        update = !StringUtils.isEmpty(param.getCategory1())?update.set("category1",param.getCategory1()):update;
-        update = !StringUtils.isEmpty(param.getCategory2())?update.set("category2",param.getCategory2()):update;
-        update = !StringUtils.isEmpty(param.getRegion())?update.set("address.$.region",param.getRegion()):update;
-        update = !StringUtils.isEmpty(param.getAddress())?update.set("address.$.name",param.getAddress()):update;
-        update = !StringUtils.isEmpty(param.getLocation())?update.set("address.$.lang",Double.parseDouble(param.getLocation().split(";")[0])):update;
-        update = !StringUtils.isEmpty(param.getLocation())?update.set("address.$.lat",Double.parseDouble(param.getLocation().split(";")[1])):update;
-        update = !StringUtils.isEmpty(param.getContact())?update.set("phone",param.getContact()):update;
-        update = !StringUtils.isEmpty(param.getFaxNo())?update.set("faxNo",param.getFaxNo()):update;
-        update = !StringUtils.isEmpty(param.getServiceTime())?update.set("serviceTime",param.getServiceTime()):update;
-        update = !StringUtils.isEmpty(param.getEmail())?update.set("email",param.getEmail()):update;
-        update = !StringUtils.isEmpty(param.getWebsite())?update.set("website",param.getWebsite()):update;
-        update = !StringUtils.isEmpty(param.getWelChat())?update.set("wx",param.getWelChat()):update;
-        update = !StringUtils.isEmpty(param.getPayType())?update.set("paymentType",param.getPayType()):update;
-        update = !StringUtils.isEmpty(param.getAveragePrice())?update.set("averagePrice",String.valueOf(param.getAveragePrice())):update;
-        update = !StringUtils.isEmpty(param.getWholeScore())?update.set("wholeScore",param.getWholeScore()):update;
-        update = !StringUtils.isEmpty(param.getEnvScore())?update.set("envScore",param.getEnvScore()):update;
-        update = !StringUtils.isEmpty(param.getFlavorScore())?update.set("flavorScore",param.getFlavorScore()):update;
-        update = !StringUtils.isEmpty(param.getServiceScore())?update.set("serviceScore",param.getServiceScore()):update;
-        update = !StringUtils.isEmpty(param.getHot())?update.set("hot",param.getHot()):update;
+        if (!StringUtils.isEmpty(param.getUserId())) {
+            update.set("userId",param.getUserId());
+        }
+        if (!StringUtils.isEmpty(param.getShopName())) {
+            update.set("name",param.getShopName());
+        }
+        if (!StringUtils.isEmpty(param.getCompanyName())) {
+            update.set("applyInfo.$.companyName",param.getCompanyName());
+        }
+        if (!StringUtils.isEmpty(param.getFile())) {
+            update.set("applyInfo.$.IDUrl",param.getFile());
+        }
+        if (!StringUtils.isEmpty(param.getShopPicture())) {
+            update.set("applyInfo.$.photos",param.getShopPicture());
+        }
+        if (!StringUtils.isEmpty(param.getSourceFrom())) {
+            update.set("applyInfo.$.yelp",1==param.getSourceFrom());
+        }
+        if (!StringUtils.isEmpty(param.getCategory1())) {
+            update.set("category1",param.getCategory1());
+        }
+        if (!StringUtils.isEmpty(param.getCategory2())) {
+            update.set("category2",param.getCategory2());
+        }
+        if (!StringUtils.isEmpty(param.getRegion())) {
+            update.set("address.$.area",param.getRegion());
+        }
+        if (!StringUtils.isEmpty(param.getAddress())) {
+            update.set("address.$.name",param.getAddress());
+        }
+        if (!StringUtils.isEmpty(param.getLocation())) {
+            update.set("address.$.lang",Double.parseDouble(param.getLocation().split(";")[0]));
+        }
+        if (!StringUtils.isEmpty(param.getLocation())) {
+            update.set("address.$.lat",Double.parseDouble(param.getLocation().split(";")[1]));
+        }
+        if (!StringUtils.isEmpty(param.getContact())) {
+            update.set("phone",param.getContact());
+        }
+        if (!StringUtils.isEmpty(param.getFaxNo())) {
+            update.set("faxNo",param.getFaxNo());
+        }
+        if (!StringUtils.isEmpty(param.getServiceTime())) {
+            update.set("serviceTime",param.getServiceTime());
+        }
+        if (!StringUtils.isEmpty(param.getEmail())) {
+            update.set("email",param.getEmail());
+        }
+        if (!StringUtils.isEmpty(param.getWebsite())) {
+            update.set("website",param.getWebsite());
+        }
+        if (!StringUtils.isEmpty(param.getWelChat())) {
+            update.set("wx",param.getWelChat());
+        }
+        if (!StringUtils.isEmpty(param.getPayType())) {
+            update.set("paymentType",param.getPayType());
+        }
+        if (!StringUtils.isEmpty(param.getAveragePrice())) {
+            update.set("averagePrice",String.valueOf(param.getAveragePrice()));
+        }
+        if (!StringUtils.isEmpty(param.getWholeScore())) {
+            update.set("wholeScore",param.getWholeScore());
+        }
+        if (!StringUtils.isEmpty(param.getEnvScore())) {
+            update.set("envScore",param.getEnvScore());
+        }
+        if (!StringUtils.isEmpty(param.getFlavorScore())) {
+            update.set("flavorScore",param.getFlavorScore());
+        }
+        if (!StringUtils.isEmpty(param.getServiceScore())) {
+            update.set("serviceScore",param.getServiceScore());
+        }
+        if (!StringUtils.isEmpty(param.getHot())) {
+            update.set("hot",param.getHot());
+        }
         update.set("updateTime",DateUtils.getCurDateTime());
         return update;
     }
@@ -599,6 +649,9 @@ public class MerchantServiceImpl implements MerchantService {
                 }
                 searchResultDto.setShopName(merchant.getName());
                 for (Category category : categoryList) {
+                    if (null == category || null == category.getId()) {
+                        continue;
+                    }
                     if (category.getId().equals(merchant.getCategory2())) {
                         searchResultDto.setCategoryName(category.getName());
                     }
