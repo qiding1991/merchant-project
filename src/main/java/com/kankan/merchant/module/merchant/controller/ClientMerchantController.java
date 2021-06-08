@@ -25,7 +25,7 @@ public class ClientMerchantController {
     @ApiOperation(value = "商家详情服务")
     @RequestMapping(value = "findShopDetail", method = RequestMethod.GET)
     public CommonResponse findProduct (String shopId,String userId) {
-        if (StringUtils.isEmpty(shopId) || StringUtils.isEmpty(userId)) {
+        if (StringUtils.isEmpty(shopId)) {
             return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
         }
         return CommonResponse.success(merchantService.findByIdForClient(shopId,userId));
@@ -34,7 +34,7 @@ public class ClientMerchantController {
     @ApiOperation(value = "商家详情服务")
     @RequestMapping(value = "findProductDetail", method = RequestMethod.GET)
     public CommonResponse findProductDetail (String productId,String userId) {
-        if (StringUtils.isEmpty(productId) || StringUtils.isEmpty(userId)) {
+        if (StringUtils.isEmpty(productId)) {
             return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
         }
         return CommonResponse.success(productService.findDetailForClient(productId,Integer.valueOf(userId)));

@@ -363,6 +363,7 @@ public class MerchantServiceImpl implements MerchantService {
         BigDecimal bigDecimalEnv = new BigDecimal(0.00);
         BigDecimal bigDecimalFlavor = new BigDecimal(0.00);
         BigDecimal bigDecimalService = new BigDecimal(0.00);
+        BigDecimal bigDecimalWhole = new BigDecimal(0.00);
         for (CommonAppraise appraise : shopAppraiseList) {
             if (!StringUtils.isEmpty(appraise.getEnvScore())) {
                 bigDecimalEnv = bigDecimalEnv.add(BigDecimal.valueOf(Double.parseDouble(appraise.getEnvScore())));
@@ -372,6 +373,9 @@ public class MerchantServiceImpl implements MerchantService {
             }
             if (!StringUtils.isEmpty(appraise.getServiceScore())) {
                 bigDecimalService = bigDecimalService.add(BigDecimal.valueOf(Double.parseDouble(appraise.getServiceScore())));
+            }
+            if (!StringUtils.isEmpty(appraise.getWholeScore())) {
+                bigDecimalWhole = bigDecimalWhole.add(BigDecimal.valueOf(Double.parseDouble(appraise.getWholeScore())));
             }
         }
         if (bigDecimalEnv.doubleValue() > 0) {
@@ -385,6 +389,10 @@ public class MerchantServiceImpl implements MerchantService {
         if (bigDecimalService.doubleValue() > 0) {
             double bigDecimalServiceAver = bigDecimalService.doubleValue()/size;
             shopParam.setServiceScore(String.valueOf(bigDecimalServiceAver));
+        }
+        if (bigDecimalWhole.doubleValue() > 0) {
+            double bigDecimalWholeAver = bigDecimalWhole.doubleValue()/size;
+            shopParam.setWholeScore(String.valueOf(bigDecimalWholeAver));
         }
     }
 
@@ -467,13 +475,23 @@ public class MerchantServiceImpl implements MerchantService {
         if (!StringUtils.isEmpty(registerShopParam.getLocation()) && registerShopParam.getLocation().contains(";")) {
             String [] locationArray = registerShopParam.getLocation().split(";");
             Point point = new Point(Double.parseDouble(locationArray[0]),Double.parseDouble(locationArray[1]));
-            query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000.00));
+            query.addCriteria(Criteria.where("location").near(point).maxDistance(5000));
         }
         merchantList = mongoTemplate.find(query, Merchant.class);
         if (!CollectionUtils.isEmpty(merchantList)) {
+            List<Category> categoryList = mongoTemplate.findAll(Category.class);
             for (Merchant merchant : merchantList) {
                 RegisterShopParam item = merchantToParam(merchant,registerShopParam.getUserLocation());
+                for (Category category : categoryList) {
+                    if (null == category || null == category.getId()) {
+                        continue;
+                    }
+                    if (category.getId().equals(merchant.getCategory2())) {
+                        item.setCategory2(category.getName());
+                    }
+                }
                 item.setAppraiseNum(getShopAppraiseNum(merchant.getId()));
+                enrichShopScore(item);
                 result.add(item);
             }
         }
@@ -495,10 +513,20 @@ public class MerchantServiceImpl implements MerchantService {
         List<Merchant> merchantList = mongoTemplate.find(query, Merchant.class);
         List<RegisterShopParam> result = new ArrayList<>(merchantList.size());
         if (!CollectionUtils.isEmpty(merchantList)) {
+            List<Category> categoryList = mongoTemplate.findAll(Category.class);
             for (Merchant merchant : merchantList) {
                 //result.add(merchantToParam(merchant,merchantQueryParam.getUserLocation()));
                 RegisterShopParam item = merchantToParam(merchant,merchantQueryParam.getUserLocation());
                 item.setAppraiseNum(getShopAppraiseNum(merchant.getId()));
+                for (Category category : categoryList) {
+                    if (null == category || null == category.getId()) {
+                        continue;
+                    }
+                    if (category.getId().equals(merchant.getCategory2())) {
+                        item.setCategory2(category.getName());
+                    }
+                }
+                enrichShopScore(item);
                 result.add(item);
             }
         }
@@ -521,7 +549,7 @@ public class MerchantServiceImpl implements MerchantService {
                     && merchantQueryParam.getLocation().contains(";")) {
                 String [] locationArray = merchantQueryParam.getLocation().split(";");
                 Point point = new Point(Double.parseDouble(locationArray[0]),Double.parseDouble(locationArray[1]));
-                query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000.00));
+                query.addCriteria(Criteria.where("location").near(point).maxDistance(5000));
             }
             if (2 == merchantQueryParam.getIntelligentType()) {
                 query.with(Sort.by(Sort.Order.desc("wholeScore")));
@@ -573,7 +601,9 @@ public class MerchantServiceImpl implements MerchantService {
             searchResultDto = new SearchResultDto();
             searchResultDto.setId(merchant.getId());
             searchResultDto.setName(merchant.getName());
-            searchResultDto.setWholeScore(null == merchant.getWholeScore()?0.00:merchant.getWholeScore());
+            RegisterShopParam param = merchantToParam(merchant,null);
+            enrichShopScore(param);
+            searchResultDto.setWholeScore(Double.parseDouble(param.getWholeScore()));
             searchResultDto.setAveragePrice(String.valueOf(merchant.getAveragePrice()));
             if (null != merchant.getAddress()) {
                 searchResultDto.setArea(AreaEnum.getNameByCode(merchant.getAddress().getArea()));
