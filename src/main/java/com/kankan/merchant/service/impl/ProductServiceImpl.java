@@ -181,7 +181,7 @@ public class ProductServiceImpl implements ProductService {
     public List<SearchResultDto> getCollectProductListByUserId (final String userId) {
         List<CommonProduct> result = mongoTemplate.findAll(CommonProduct.class);
         if (CollectionUtils.isEmpty(result)) {
-            return new ArrayList<CommonProduct>();
+            return new ArrayList<SearchResultDto>();
         }
         List<CommonProduct> list = result.stream().filter(item -> !CollectionUtils.isEmpty(item.getCollectUsers()) && item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
         List<Merchant> shopList = mongoTemplate.findAll(Merchant.class);
