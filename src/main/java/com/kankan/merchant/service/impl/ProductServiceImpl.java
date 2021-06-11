@@ -200,7 +200,9 @@ public class ProductServiceImpl implements ProductService {
             for (Merchant shop : shopList) {
                 if (product.getShopId().equals(shop.getId())) {
                     resultDto.setShopName(shop.getName());
-                    resultDto.setArea(AreaEnum.getNameByCode(shop.getAddress().getArea()));
+                    if (null != shop.getAddress()) {
+                        resultDto.setArea(AreaEnum.getNameByCode(shop.getAddress().getArea()));
+                    }
                 }
                 for (Category category : categoryList) {
                     if (null != category && null != category.getId() && shop.getCategory2().equals(category.getId())) {
