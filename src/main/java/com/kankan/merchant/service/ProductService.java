@@ -2,6 +2,7 @@ package com.kankan.merchant.service;
 
 import com.kankan.merchant.module.merchant.common.CommonProduct;
 import com.kankan.merchant.module.merchant.dto.ProductResultDto;
+import com.kankan.merchant.module.merchant.dto.SearchResultDto;
 import com.kankan.merchant.module.param.CollectLikeParam;
 import com.kankan.merchant.module.param.ProductUpdateParam;
 import java.util.List;
@@ -26,7 +27,7 @@ public interface ProductService {
 
   ProductResultDto findDetailForClient (String productId,Integer userId);
 
-  List<CommonProduct> getCollectProductListByUserId (final String userId);
+  List<SearchResultDto> getCollectProductListByUserId (final String userId);
 
   void productCollect (CollectLikeParam param);
 

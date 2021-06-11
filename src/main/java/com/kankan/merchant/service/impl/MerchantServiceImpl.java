@@ -406,7 +406,22 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public List<RegisterShopParam> getCollectShopListByUserId (final String userId) {
-        return this.findShopList().stream().filter(item -> !CollectionUtils.isEmpty(item.getCollectUsers()) && item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
+        List<RegisterShopParam> result =  this.findShopList().stream().filter(item -> !CollectionUtils.isEmpty(item.getCollectUsers()) && item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(result)) {
+            return new ArrayList<RegisterShopParam>();
+        }
+        List<Category> categoryList = mongoTemplate.findAll(Category.class);
+        for (RegisterShopParam item : result) {
+            for (Category category : categoryList) {
+                if (null == category || null == category.getId()) {
+                    continue;
+                }
+                if (category.getId().equals(item.getCategory2())) {
+                    item.setCategory2(category.getName());
+                }
+            }
+        }
+        return result;
     }
 
     @Override
