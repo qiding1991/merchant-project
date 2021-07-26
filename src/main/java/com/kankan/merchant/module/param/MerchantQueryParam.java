@@ -20,4 +20,6 @@ public class MerchantQueryParam {
 
     private String userLocation;
 
+    private Integer startIndex;
+
 }

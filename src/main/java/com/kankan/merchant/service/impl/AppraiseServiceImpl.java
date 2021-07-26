@@ -116,15 +116,15 @@ public class AppraiseServiceImpl implements AppraiseService {
         if (null == appraise) {
             return;
         }
-        List<Integer> likeUsers = appraise.getLikeUsers();
+        List<String> likeUsers = appraise.getLikeUsers();
         if (CollectionUtils.isEmpty(likeUsers)) {
             likeUsers = new ArrayList<>();
         }
         if (1 == type) {
-            likeUsers.add(Integer.valueOf(userId));
+            likeUsers.add(userId);
         }
         if (0 == type) {
-            likeUsers.remove(Integer.valueOf(userId));
+            likeUsers.remove(userId);
         }
         appraise.setLikeUsers(likeUsers);
         /*if (0 < type) {

@@ -22,6 +22,7 @@ import org.gavaghan.geodesy.Ellipsoid;
 import org.gavaghan.geodesy.GeodeticCalculator;
 import org.gavaghan.geodesy.GlobalCoordinates;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -45,6 +46,8 @@ public class MerchantServiceImpl implements MerchantService {
     private MongoTemplate mongoTemplate;
     @Autowired
     private UserPrivilegeService userPrivilegeService;
+    @Value("${mongo.data.size:20}")
+    private Integer size;
 
     @Override
     public RegisterShopParam registerMerchant(RegisterShopParam registerShopParam) {
@@ -84,8 +87,8 @@ public class MerchantServiceImpl implements MerchantService {
             address.setLang(Double.parseDouble(registerShopParam.getLocation().split(";")[0]));
             address.setLat(Double.parseDouble(registerShopParam.getLocation().split(";")[1]));
             List<Double> locationData = new ArrayList<>(2);
-            Point point = new Point(address.getLang(), address.getLat());
-            merchant.setLocation(point);
+            //Point point = new Point(address.getLang(), address.getLat());
+            merchant.setLocation(locationData);
         }
         merchant.setAddress(address);
         ApplyInfo applyInfo = new ApplyInfo();
@@ -168,16 +171,16 @@ public class MerchantServiceImpl implements MerchantService {
         registerShopParam.setRegisterTime(merchant.getRegisterTime());
         registerShopParam.setUpdateTime(merchant.getUpdateTime());
         registerShopParam.setUserId(merchant.getUserId());
-        if (!StringUtils.isEmpty(userLocation)) {
-            Point point = merchant.getLocation();
+        if (!StringUtils.isEmpty(userLocation) && !CollectionUtils.isEmpty(merchant.getLocation())) {
+            List<Double> point = merchant.getLocation();
             registerShopParam.setDistance(String.valueOf(getDistance(point,registerShopParam.getUserLocation())));
         }
         registerShopParam.setCollectUsers(merchant.getCollectUsers());
         return registerShopParam;
     }
 
-    private double getDistance(Point fromLocation,String toLocation) {
-        GlobalCoordinates from = new GlobalCoordinates(fromLocation.getX(),fromLocation.getY());
+    private double getDistance(List<Double> fromLocation,String toLocation) {
+        GlobalCoordinates from = new GlobalCoordinates(fromLocation.get(0),fromLocation.get(1));
         String [] toLocationData = toLocation.split(";");
         GlobalCoordinates to = new GlobalCoordinates(Double.parseDouble(toLocationData[0]),Double.parseDouble(toLocationData[1]));
         return new GeodeticCalculator().calculateGeodeticCurve(Ellipsoid.Sphere,from,to).getEllipsoidalDistance();
@@ -303,7 +306,7 @@ public class MerchantServiceImpl implements MerchantService {
         Query query = Query.query(Criteria.where("_id").is(shopId));
         RegisterShopParam result = merchantToParam(mongoTemplate.findOne(query, Merchant.class),null);
         result.setIsCollection(false);
-        if (!CollectionUtils.isEmpty(result.getCollectUsers()) && !StringUtils.isEmpty(userId) && result.getCollectUsers().contains(Integer.valueOf(userId))) {
+        if (!CollectionUtils.isEmpty(result.getCollectUsers()) && !StringUtils.isEmpty(userId) && result.getCollectUsers().contains(userId)) {
             result.setIsCollection(true);
         }
         query = Query.query(Criteria.where("shopId").is(shopId));
@@ -312,11 +315,11 @@ public class MerchantServiceImpl implements MerchantService {
         for (CommonProduct product : productList) {
             product.setIsCollection(false);
             if (!CollectionUtils.isEmpty(product.getCollectUsers()) && !StringUtils.isEmpty(userId)) {
-                product.setIsCollection(product.getCollectUsers().contains(Integer.valueOf(userId)));
+                product.setIsCollection(product.getCollectUsers().contains(userId));
             }
             if (!CollectionUtils.isEmpty(product.getLikeUsers())) {
                 if (!StringUtils.isEmpty(userId)) {
-                    product.setIsLike(product.getLikeUsers().contains(Integer.valueOf(userId)));
+                    product.setIsLike(product.getLikeUsers().contains(userId));
                 }
                 product.setLikeNum(product.getLikeUsers().size());
             }
@@ -325,7 +328,7 @@ public class MerchantServiceImpl implements MerchantService {
             for (CommonAppraise appraise : appraiseList) {
                 if (!CollectionUtils.isEmpty(appraise.getLikeUsers())) {
                     if (!StringUtils.isEmpty(userId)) {
-                        appraise.setIsLike(appraise.getLikeUsers().contains(Integer.valueOf(userId)));
+                        appraise.setIsLike(appraise.getLikeUsers().contains(userId));
                     }
                     appraise.setLikeNum(appraise.getLikeUsers().size());
                 }
@@ -341,7 +344,7 @@ public class MerchantServiceImpl implements MerchantService {
                 if (!CollectionUtils.isEmpty(shopAppraise.getLikeUsers())) {
                     shopAppraise.setLikeNum(shopAppraise.getLikeUsers().size());
                     if (!StringUtils.isEmpty(userId)) {
-                        shopAppraise.setIsLike(shopAppraise.getLikeUsers().contains(Integer.valueOf(userId)));
+                        shopAppraise.setIsLike(shopAppraise.getLikeUsers().contains(userId));
                     }
                 }
             }
@@ -397,21 +400,49 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public List<RegisterShopParam> findShopList() {
-        List<Merchant> list = mongoTemplate.findAll(Merchant.class);
+    public List<RegisterShopParam> findShopList(Integer startIndex) {
+        Query query = new Query();
+        if (null == startIndex || 0 == startIndex) {
+            startIndex = 0;
+        }
+        query.skip(startIndex).limit(size);
+        List<Merchant> list = mongoTemplate.find(query,Merchant.class);
         return list.stream().map(item -> {
             return merchantToParam(item,null);
         }).collect(Collectors.toList());
     }
 
     @Override
-    public List<RegisterShopParam> getCollectShopListByUserId (final String userId) {
-        return this.findShopList().stream().filter(item -> !CollectionUtils.isEmpty(item.getCollectUsers()) && item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
+    public List<RegisterShopParam> getCollectShopListByUserId (final String userId,Integer startIndex) {
+        Query query = new Query();
+        if (null == startIndex || 0 == startIndex) {
+            startIndex = 0;
+        }
+        query.skip(startIndex).limit(size);
+        query.addCriteria(Criteria.where("collectUsers").is(userId));
+        List<Merchant> list = mongoTemplate.find(query,Merchant.class);
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
+        List<Category> categoryList = mongoTemplate.findAll(Category.class);
+        for (Merchant merchant : list) {
+            for (Category category : categoryList) {
+                if (null != merchant.getCategory2() && null != category.getId() && merchant.getCategory2().equals(category.getId())) {
+                    merchant.setCategory2(category.getName());
+                }
+            }
+        }
+        return list.stream().map(item -> {
+            return merchantToParam(item,null);
+        }).collect(Collectors.toList());
+        //return this.findShopList().stream().filter(item -> !CollectionUtils.isEmpty(item.getCollectUsers()) && item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
     }
 
     @Override
     public List<Merchant> findHotShop() {
         Query query = Query.query(Criteria.where("hot").is(true));
+        query.skip(3).limit(9);
+        //query.with(Sort.by(Sort.Order("", Sort.Order.)));
         return mongoTemplate.find(query, Merchant.class);
     }
 
@@ -459,8 +490,12 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public List<RegisterShopParam> firstPageMerchant(RegisterShopParam registerShopParam) {
+        if (null == registerShopParam.getStartIndex()) {
+            registerShopParam.setStartIndex(0);
+        }
         LogUtil.printLog(log,"firstPageMerchant",registerShopParam);
         Query query = new Query();
+        query.skip(registerShopParam.getStartIndex()).limit(size);
         if (!StringUtils.isEmpty(registerShopParam.getCategory1()) && !"0".equals(registerShopParam.getCategory1())) {
             query.addCriteria(Criteria.where("category1").is(registerShopParam.getCategory1()));
         }
@@ -475,7 +510,7 @@ public class MerchantServiceImpl implements MerchantService {
         if (!StringUtils.isEmpty(registerShopParam.getLocation()) && registerShopParam.getLocation().contains(";")) {
             String [] locationArray = registerShopParam.getLocation().split(";");
             Point point = new Point(Double.parseDouble(locationArray[0]),Double.parseDouble(locationArray[1]));
-            query.addCriteria(Criteria.where("location").near(point).maxDistance(5000));
+            query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000));
         }
         merchantList = mongoTemplate.find(query, Merchant.class);
         if (!CollectionUtils.isEmpty(merchantList)) {
@@ -510,6 +545,10 @@ public class MerchantServiceImpl implements MerchantService {
     public List<RegisterShopParam> chooseShop (MerchantQueryParam merchantQueryParam) {
         LogUtil.printLog(log,"chooseShop",merchantQueryParam);
         Query query = buildQueryCondition(merchantQueryParam);
+        if (null == merchantQueryParam.getStartIndex()) {
+            merchantQueryParam.setStartIndex(0);
+        }
+        query.skip(merchantQueryParam.getStartIndex()).limit(size);
         List<Merchant> merchantList = mongoTemplate.find(query, Merchant.class);
         List<RegisterShopParam> result = new ArrayList<>(merchantList.size());
         if (!CollectionUtils.isEmpty(merchantList)) {
@@ -549,7 +588,7 @@ public class MerchantServiceImpl implements MerchantService {
                     && merchantQueryParam.getLocation().contains(";")) {
                 String [] locationArray = merchantQueryParam.getLocation().split(";");
                 Point point = new Point(Double.parseDouble(locationArray[0]),Double.parseDouble(locationArray[1]));
-                query.addCriteria(Criteria.where("location").near(point).maxDistance(5000));
+                query.addCriteria(Criteria.where("location").nearSphere(point).maxDistance(5000));
             }
             if (2 == merchantQueryParam.getIntelligentType()) {
                 query.with(Sort.by(Sort.Order.desc("wholeScore")));
@@ -589,6 +628,10 @@ public class MerchantServiceImpl implements MerchantService {
 
     private List<SearchResultDto> searchShop (SearchParam searchParam) {
         Query query = buildQueryCondition(searchParam);
+        if (null == searchParam.getStartIndex()) {
+            searchParam.setStartIndex(0);
+        }
+        query.skip(searchParam.getStartIndex()).limit(size);
         query.addCriteria(Criteria.where("name").regex(".*?\\"+searchParam.getName()+".*"));
         List<Merchant> merchantList = mongoTemplate.find(query, Merchant.class);
         if (CollectionUtils.isEmpty(merchantList)) {
@@ -623,9 +666,9 @@ public class MerchantServiceImpl implements MerchantService {
                 }
             }
             if (null != merchant.getLocation()) {
-                String location = String.valueOf(merchant.getLocation().getX());
+                String location = String.valueOf(merchant.getLocation().get(0));
                 location = location.concat(";");
-                location = location.concat(String.valueOf(merchant.getLocation().getY()));
+                location = location.concat(String.valueOf(merchant.getLocation().get(1)));
                 searchResultDto.setLocation(location);
             }
             result.add(searchResultDto);
@@ -635,6 +678,10 @@ public class MerchantServiceImpl implements MerchantService {
 
     private List<SearchResultDto> searchProduct (SearchParam searchParam) {
         Query query = new Query();
+        if (null == searchParam.getStartIndex()) {
+            searchParam.setStartIndex(0);
+        }
+        query.skip(searchParam.getStartIndex()).limit(size);
         query.addCriteria(Criteria.where("productName").regex(".*?\\"+searchParam.getName()+".*"));
         if (searchParam.getIntelligentType() > 0) {
             if (3 == searchParam.getIntelligentType()) {
@@ -735,7 +782,7 @@ public class MerchantServiceImpl implements MerchantService {
         if (null == shop) {
             return;
         }
-        List<Integer> collectUsers = shop.getCollectUsers();
+        List<String> collectUsers = shop.getCollectUsers();
         if (CollectionUtils.isEmpty(collectUsers)) {
             if (2 == param.getType()) {
                 collectUsers = new ArrayList<>(1);

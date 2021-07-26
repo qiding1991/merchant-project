@@ -6,6 +6,9 @@ spring:
       uri: mongodb://127.0.0.1:27017/merchant
       #uri: mongodb://47.94.33.237:27017/merchant
       auto-index-creation: true
+mongo:
+  data:
+    size: 20
 server:
   port: 8084
 

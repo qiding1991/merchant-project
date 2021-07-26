@@ -137,7 +137,7 @@ public class ProductServiceImpl implements ProductService {
         return result;
     }
 
-    public ProductResultDto findDetailForClient (String productId,Integer userId) {
+    public ProductResultDto findDetailForClient (String productId,String userId) {
         ProductResultDto productResultDto = new ProductResultDto();
         CommonProduct product = mongoTemplate.findById(productId,CommonProduct.class);
         if (null == product) {
@@ -177,7 +177,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<CommonProduct> getCollectProductListByUserId (final String userId) {
         List<CommonProduct> result = mongoTemplate.findAll(CommonProduct.class);
-        return result.stream().filter(item -> !CollectionUtils.isEmpty(item.getCollectUsers()) && item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
+        return result.stream().filter(item -> !CollectionUtils.isEmpty(item.getCollectUsers()) && item.getCollectUsers().contains(userId)).collect(Collectors.toList());
     }
 
     @Override
@@ -188,7 +188,7 @@ public class ProductServiceImpl implements ProductService {
         if (null == product) {
             return;
         }
-        List<Integer> collectUsers = product.getCollectUsers();
+        List<String> collectUsers = product.getCollectUsers();
         if (CollectionUtils.isEmpty(collectUsers)) {
             if (2 == param.getType()) {
                 collectUsers = new ArrayList<>(1);
@@ -213,7 +213,7 @@ public class ProductServiceImpl implements ProductService {
         if (null == product) {
             return;
         }
-        List<Integer> markLikeUsers = product.getLikeUsers();
+        List<String> markLikeUsers = product.getLikeUsers();
         if (CollectionUtils.isEmpty(markLikeUsers)) {
             if (2 == param.getType()) {
                 markLikeUsers = new ArrayList<>(1);

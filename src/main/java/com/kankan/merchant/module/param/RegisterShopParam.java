@@ -52,7 +52,7 @@ public class RegisterShopParam {
   private Integer applyStatus = 1;
   private Integer status;
   private String distance;
-  private List<Integer> collectUsers;
+  private List<String> collectUsers;
   private String registerTime;
   private String updateTime;
   private Boolean isCollection;
@@ -60,6 +60,7 @@ public class RegisterShopParam {
   private List<Product> productList = new ArrayList<>();
   private List<CommonProduct> clientProductList = new ArrayList<>();
   private List<CommonAppraise> shopAppraiseList = new ArrayList<>();
+  private Integer startIndex;
   public RegisterShopParam () {}
   public RegisterShopParam (String id, Integer applyStatus) {
     this.id = id;

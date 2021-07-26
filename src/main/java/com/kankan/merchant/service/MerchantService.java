@@ -16,9 +16,9 @@ public interface MerchantService {
 
   void applyMerchant(MerchantApplyParam merchantApplyParam);
 
-  public List<RegisterShopParam> findShopList();
+  List<RegisterShopParam> findShopList(Integer startIndex);
 
-  List<RegisterShopParam> getCollectShopListByUserId (final String userId);
+  List<RegisterShopParam> getCollectShopListByUserId (final String userId,Integer startIndex);
 
   RegisterShopParam findByIdForClient(String shopId,String userId);
 

@@ -11,7 +11,7 @@ public class CollectLikeParam {
     private Integer type;
 
     @ApiModelProperty(value = "用户ID", notes = "", required = true)
-    private Integer userId;
+    private String userId;
 
     public void setTargetId(String targetId) {
         this.targetId = targetId;
@@ -28,11 +28,11 @@ public class CollectLikeParam {
         return type;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public Integer getUserId() {
+    public String getUserId() {
         return userId;
     }
 }

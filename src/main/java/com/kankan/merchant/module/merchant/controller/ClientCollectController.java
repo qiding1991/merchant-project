@@ -48,11 +48,11 @@ public class ClientCollectController {
 
     @ApiOperation(value = "获取我的店铺收藏列表服务")
     @RequestMapping(value = "collectShopList", method = RequestMethod.GET)
-    public CommonResponse shopCollect (String userId) {
+    public CommonResponse shopCollect (String userId,Integer startIndex) {
         if (StringUtils.isEmpty(userId)) {
             return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
         }
-        return CommonResponse.success(merchantService.getCollectShopListByUserId(userId));
+        return CommonResponse.success(merchantService.getCollectShopListByUserId(userId,startIndex));
     }
 
     @ApiOperation(value = "获取我的产品收藏列表服务")

@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(origins = "*")
 @Api(tags = "管理后台-商家分类信息")
 @RequestMapping("admin/category")
@@ -23,10 +25,13 @@ public class CategoryController {
 
   @ApiOperation("添加分类")
   @PostMapping(value = "add")
-  public CommonResponse addClassify(@RequestBody CategoryParam categoryParam) {
-    Category category = new Category();
-    BeanUtils.copyProperties(categoryParam, category);
-    return CommonResponse.success(categoryService.addCategory(category));
+  public CommonResponse addClassify(@RequestBody List<CategoryParam> categoryParam) {
+    for (CategoryParam param : categoryParam) {
+      Category category = new Category();
+      BeanUtils.copyProperties(param, category);
+      categoryService.addCategory(category);
+    }
+    return CommonResponse.success();
   }
 
   @ApiOperation(value = "查询分类",notes = "不传parentId默认查询所有一级分类,反之查询parentId子分类")

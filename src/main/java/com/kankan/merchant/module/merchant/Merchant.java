@@ -21,7 +21,7 @@ public class Merchant {
   private String name; //商铺名称
   private Address address;
   @GeoSpatialIndexed(name = "location")
-  private Point location;
+  private List<Double> location;
   private List<Integer> paymentType;//支付方式
   private String phone;
   private String email;
@@ -38,7 +38,7 @@ public class Merchant {
   private Double serviceScore;
   private List<Appraise> appraiseList;
   private Integer thumpCount;
-  private List<Integer> collectUsers;
+  private List<String> collectUsers;
   private Boolean isCollection;
   private String registerTime;
   private String updateTime;

@@ -37,6 +37,6 @@ public class ClientMerchantController {
         if (StringUtils.isEmpty(productId)) {
             return CommonResponse.error(ErrorCode.PARAM_CHECK_ERROR);
         }
-        return CommonResponse.success(productService.findDetailForClient(productId,Integer.valueOf(userId)));
+        return CommonResponse.success(productService.findDetailForClient(productId,userId));
     }
 }
