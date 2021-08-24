@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.kankan.merchant.common.AreaEnum;
+import com.kankan.merchant.module.classify.model.Category;
 import com.kankan.merchant.module.merchant.Appraise;
 import com.kankan.merchant.module.merchant.Merchant;
 import com.kankan.merchant.module.merchant.common.CommonAppraise;
 import com.kankan.merchant.module.merchant.common.CommonProduct;
 import com.kankan.merchant.module.merchant.dto.ProductResultDto;
+import com.kankan.merchant.module.merchant.dto.SearchResultDto;
 import com.kankan.merchant.module.param.CollectLikeParam;
 import com.kankan.merchant.module.param.ProductUpdateParam;
 import com.kankan.merchant.utils.DateUtils;
@@ -175,9 +178,41 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<CommonProduct> getCollectProductListByUserId (final String userId) {
+    public List<SearchResultDto> getCollectProductListByUserId (final String userId) {
         List<CommonProduct> result = mongoTemplate.findAll(CommonProduct.class);
-        return result.stream().filter(item -> !CollectionUtils.isEmpty(item.getCollectUsers()) && item.getCollectUsers().contains(userId)).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(result)) {
+            return new ArrayList<>();
+        }
+        List<CommonProduct> list = result.stream().filter(item -> !CollectionUtils.isEmpty(item.getCollectUsers()) && item.getCollectUsers().contains(Integer.valueOf(userId))).collect(Collectors.toList());
+        List<Merchant> shopList = mongoTemplate.findAll(Merchant.class);
+        List<Category> categoryList = mongoTemplate.findAll(Category.class);
+        SearchResultDto resultDto = null;
+        List<SearchResultDto> resultList = new ArrayList<SearchResultDto>(list.size());
+        for (CommonProduct product : list) {
+            if (StringUtils.isEmpty(product.getShopId())) {
+                continue;
+            }
+            resultDto = new SearchResultDto();
+            resultDto.setId(product.getId());
+            resultDto.setName(product.getProductName());
+            resultDto.setAveragePrice(String.valueOf(product.getPrice()));
+            resultDto.setPicture(product.getFacePicture());
+            for (Merchant shop : shopList) {
+                if (product.getShopId().equals(shop.getId())) {
+                    resultDto.setShopName(shop.getName());
+                    if (null != shop.getAddress()) {
+                        resultDto.setArea(AreaEnum.getNameByCode(shop.getAddress().getArea()));
+                    }
+                }
+                for (Category category : categoryList) {
+                    if (null != category && null != category.getId() && shop.getCategory2().equals(category.getId())) {
+                        resultDto.setCategoryName(category.getName());
+                    }
+                }
+            }
+            resultList.add(resultDto);
+        }
+        return resultList;
     }
 
     @Override
